@@ -6,7 +6,8 @@ namespace Infrastructure.Entities;
 public class UserAddressEntity
 {
     [Key]
-    public int Id { get; set; }
+    [ForeignKey(nameof(UserEntity))]
+    public Guid UserId { get; set; }
 
     [Required]
     [Column(TypeName = "nvarchar(50)")]
@@ -18,5 +19,7 @@ public class UserAddressEntity
     [Column(TypeName = "nvarchar(50)")]
     public string? City { get; set; }
 
-    public virtual ICollection<UserEntity> Addresses { get; set; }  = new HashSet<UserEntity>();
+    public virtual UserEntity User { get; set; } = null!;
+
+   
 }

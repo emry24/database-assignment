@@ -5,11 +5,6 @@ namespace Infrastructure.Entities;
 
 public class UserEntity
 {
-    public UserEntity()
-    {
-        Created = DateTime.Now;
-        Modified = DateTime.Now;
-    }
 
     [Key]
     public Guid Id { get; set; }
@@ -19,17 +14,12 @@ public class UserEntity
     public DateTime Created { get; set; }
 
 
-    // public Datetime Created { get; set; } = Datetime.Now();
 
     [Required]
     [Column(TypeName = "datetime2")]
     public DateTime Modified { get; set; }
 
-    // public Datetime Modified { get; set; } = Datetime.Now();
-
-    [Required]
-    [ForeignKey(nameof(UserAddressEntity))]
-    public int AddressId { get; set; }
+    
 
     [Required]
     [ForeignKey(nameof(RoleEntity))]

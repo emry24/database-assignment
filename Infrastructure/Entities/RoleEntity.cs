@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Infrastructure.Entities;
 
+[Index(nameof(RoleName), IsUnique = true)]
 public class RoleEntity
 {
     [Key]

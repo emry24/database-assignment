@@ -79,4 +79,14 @@ public abstract class BaseRepository<TEntity> where TEntity : class
         catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }
         return false;
     }
+
+    public virtual bool Exists(Expression<Func<TEntity, bool>> predicate)
+    {
+        try
+        {
+            return _context.Set<TEntity>().Any(predicate);
+        }
+        catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }
+        return false;
+    }
 }

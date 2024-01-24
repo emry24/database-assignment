@@ -1,11 +1,9 @@
 ﻿namespace Infrastructure.Dtos;
 
 
-public class CreateUserDto
+public class UserRegistrationDto
 {
-    public Guid Id { get; set; } = new Guid();
-
-    public DateTime Created { get; set; } = DateTime.Now;
+    //public Guid Id { get; set; } = new Guid();
 
     public string FirstName { get; set; } = null!;
 
@@ -19,11 +17,14 @@ public class CreateUserDto
 
     public string RoleName { get; set; } = null!;
 
-    public int RoleId { get; set; }
+    //public int RoleId { get; set; }
 
     public string Email { get; set; } = null!;
 
     public string Password { get; set; } = null!;
+
+    //public DateTime Created { get; set; } = DateTime.Now;
+
 
 
 }

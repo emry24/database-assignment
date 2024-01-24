@@ -39,7 +39,11 @@ public abstract class BaseRepository<TEntity> where TEntity : class
     {
         try
         {
-            return _context.Set<TEntity>().FirstOrDefault(predicate, null!);
+            var entity =  _context.Set<TEntity>().FirstOrDefault(predicate);
+            if(entity != null)
+            {
+                return entity;
+            }
         }
         catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }
         return null!;

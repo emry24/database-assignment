@@ -13,45 +13,90 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
     private readonly AddressRepository _addressRepository = addressRepository;
     private readonly AuthRepository _authRepository = authRepository;
 
-   public bool CreateUser(CreateUserDto createUserDto)
+   public bool CreateUser(UserRegistrationDto userRegistrationDto)
     {
         try
         {
-            if (!_authRepository.Exists(x => x.Email == createUserDto.Email))
+            if (_authRepository.Exists(x => x.Email == userRegistrationDto.Email))
             {
-                var roleEntity = new RoleEntity
-                {
-                    RoleName = createUserDto.RoleName,
-                };
-
-               var createdRole = _roleRepository.Create(roleEntity);
-            
-                //if (createdRole != null)
-                //    return true;
+                return false;
             }
 
-            var userAddressEntity = new UserAddressEntity
-            {
-                StreetName = createUserDto.StreetName,
-                PostalCode = createUserDto.PostalCode,
-                City = createUserDto.City,
-            };
+           
+            var roleExists = _roleRepository.Exists(x => x.RoleName == userRegistrationDto.RoleName);
+            int roleId;
 
-            var createdAddress = _addressRepository.Create(userAddressEntity);
+            if (roleExists)
+            {
+                
+                var existsRoleId = _roleRepository.GetOne(x => x.RoleName == userRegistrationDto.RoleName);
+                roleId = existsRoleId.Id;
+            }
+
+            else
+            {
+                var roleentity = new RoleEntity
+                {
+                    RoleName = userRegistrationDto.RoleName,
+                };
+
+                var newRole = _roleRepository.Create(roleentity);
+                roleId = newRole.Id;
+            }
+
+
+
+
+
+            //var roleEntity = new RoleEntity
+            //{
+            //    RoleName = userRegistrationDto.RoleName,
+            //};
+
+            //var createdRole = _roleRepository.Create(roleEntity);
+
+            //if (createdRole != null)
+            //    return true;
 
             var userEntity = new UserEntity
             {
-                Id = createUserDto.Id,
-                Created = createUserDto.Created,
-                RoleId = createUserDto.RoleId,
+                Id = Guid.NewGuid(),
+                Created = DateTime.Now,
+                RoleId = roleId,
             };
 
             var createdUser = _userRepository.Create(userEntity);
 
+
+            // result = generera password skall ta in userRegistartionDTO.password
+
+            var authEntity = new UserAuthEntity
+            {
+                UserId = createdUser.Id,
+                Email = userRegistrationDto.Email,
+                Password = userRegistrationDto.Password, //result
+            };
+
+            var createdAuth = _authRepository.Create(authEntity);
+
+            var userAddressEntity = new UserAddressEntity
+            {
+                UserId = createdUser.Id,
+                StreetName = userRegistrationDto.StreetName,
+                PostalCode = userRegistrationDto.PostalCode,
+                City = userRegistrationDto.City,
+                
+            };
+
+            var createdAddress = _addressRepository.Create(userAddressEntity);
+
+           
+
             var profileEntity = new ProfileEntity
             {
-                FirstName = createUserDto.FirstName,
-                LastName = createUserDto.LastName,
+                UserId = createdUser.Id,
+                FirstName = userRegistrationDto.FirstName,
+                LastName = userRegistrationDto.LastName,
             };
 
             var createdProfile = _profileRepository.Create(profileEntity);
@@ -61,5 +106,25 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
         catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }
         return false;
     }
+
+    //public bool GetAllUsers(UserDto userDto)
+    //{
+
+    //}
+
+    //public bool GetOneUser(UserDto userDto)
+    //{
+
+    //}
+
+    //public bool UpdateUser(UserRegistrationDto userRegistrationDto)
+    //{
+
+    //}
+
+    //public bool DeleteUser(UserRegistrationDto userRegistrationDto)
+    //{
+
+    //}
 
 }

@@ -1,16 +1,12 @@
 ﻿using Infrastructure.Dtos;
+using System.Transactions;
 
 namespace Infrastructure.Services
 {
 
-    public class MenuService
+    public class MenuService(UserService userService)
     {
-        private readonly UserService _userService;
-
-        public MenuService(UserService userService)
-        {
-            _userService = userService;
-        }
+        private readonly UserService _userService = userService;
 
         public void ShowMainMenu()
         {
@@ -20,7 +16,8 @@ namespace Infrastructure.Services
                 Console.WriteLine($"{"1.",-4} Add New User");
                 Console.WriteLine($"{"2.",-4} Wiew Users");
                 Console.WriteLine($"{"3.",-4} Wiew User Details");
-                Console.WriteLine($"{"4.",-4} Delete User");
+                Console.WriteLine($"{"4.",-4} Update User Details");
+                Console.WriteLine($"{"5.",-4} Delete User");
                 Console.WriteLine($"{"0.",-4} Exit Application");
                 Console.WriteLine();
                 Console.Write("Enter Menu Option: ");
@@ -31,21 +28,21 @@ namespace Infrastructure.Services
                     case "1":
                         ShowAddUserOption();
                         break;
-                    //case "2":
-                    //    ShowViewUserListOption();
-                    //    break;
-                    //case "3":
-                    //    ShowUserDetailOption();
-                    //    break;
+                    case "2":
+                        ShowViewUserListOption();
+                        break;
+                    case "3":
+                        ShowUserDetailOption();
+                        break;
                     //case "4":
                     //    ShowUpdateUserOption();
                     //    break;
-                    //case "5":
-                    //    ShowDeleteUserOption();
-                    //    break;
-                    //case "0":
-                    //    ShowExitApplicationOption();
-                        //break;
+                    case "5":
+                        ShowDeleteUserOption();
+                        break;
+                    case "0":
+                        ShowExitApplicationOption();
+                        break;
                     default:
                         Console.WriteLine("\nInvalid option selected. Press any key to continue.");
                         Console.ReadKey();
@@ -56,12 +53,12 @@ namespace Infrastructure.Services
             }
 
         }
-        private void ShowAddUserOption()
+        private async void ShowAddUserOption()
         {
             UserRegistrationDto userData = new UserRegistrationDto();
 
 
-            DisplayMenuTitle("Add New Contact");
+            DisplayMenuTitle("Add New User");
 
             Console.Write("First Name: ");
             userData.FirstName = Console.ReadLine()!;
@@ -87,7 +84,7 @@ namespace Infrastructure.Services
             Console.Write("Password: ");
             userData.Password = Console.ReadLine()!;
 
-            _userService.CreateUser(userData);
+            await _userService.CreateUser(userData);
 
             Console.Clear();
             Console.WriteLine();
@@ -97,80 +94,95 @@ namespace Infrastructure.Services
 
         }
 
+
         //private void ShowUpdateUserOption()
         //{
+        //    Console.Clear();
+        //    Console.WriteLine("Enter User Id: ");
+        //    var id = int.Parse(Console.ReadLine()!);
+
+        //    var user = _userService.GetUserById(id);
+        //    if (user != null)
+        //    {
+        //        Console.WriteLine($"{user.FirstName} {user.LastName} {user.Email}");
+        //    }
         //}
 
-        //    private void ShowDeleteUserOption()
-        //{
-        //    DisplayMenuTitle("Delete Contact");
 
-        //    Console.Write("Enter the email of the contact to delete: ");
-        //    var emailToDelete = Console.ReadLine();
+        private async Task ShowDeleteUserOption()
+        {
+            DisplayMenuTitle("Delete User");
 
-        //    if (_personService.DeletePerson(emailToDelete!))
-        //    {
-        //        Console.WriteLine();
-        //        Console.WriteLine("Contact deleted successfully. Press any key to continue.");
-        //    }
-        //    else
-        //    {
-        //        Console.WriteLine();
-        //        Console.WriteLine("Contact not found. Press any key to continue.");
-        //    }
+            Console.Write("Enter the email of the user you want to delete: ");
+            var emailToDelete = Console.ReadLine();
 
-        //    Console.ReadKey();
+            
 
-        //}
+            if (await _userService.DeleteUserByEmail(emailToDelete!))
+            {
+                Console.WriteLine();
+                Console.WriteLine("User deleted successfully. Press any key to continue.");
+            }
+            else
+            {
+                Console.WriteLine();
+                Console.WriteLine("User not found. Press any key to continue.");
+            }
 
-        //private void ShowViewUserListOption()
-        //{
-        //    var persons = _personService.GetPersonsFromList();
+            Console.ReadKey();
 
+        }
 
 
-        //    DisplayMenuTitle("Contact List");
 
-        //    foreach (var item in persons)
-        //    {
-        //        Console.WriteLine($"{item.FirstName} {item.LastName} {item.Email}");
-        //    }
+        private async Task ShowViewUserListOption()
+        {
+            var users = await _userService.GetAllUsers();
 
-        //    Console.WriteLine();
-        //    Console.WriteLine("Press any key to go back to MENU OPTIONS.");
+            DisplayMenuTitle("User List");
 
-        //    Console.ReadKey();
-        //}
+            foreach (var item in users)
+            {
+                Console.WriteLine($"{item.FirstName} {item.LastName}, {item.RoleName}");
+            }
 
-        //private void ShowUserDetailOption()
-        //{
-        //    DisplayMenuTitle("View Contact Details");
+            Console.WriteLine();
+            Console.WriteLine("Press any key to go back to MENU OPTIONS.");
 
-        //    Console.Write("Enter the email of the contact to view details: ");
-        //    var emailToView = Console.ReadLine();
+            Console.ReadKey();
+        }
 
-        //    var person = _personService.GetPersonByEmail(emailToView!);
 
-        //    if (person != null)
-        //    {
-        //        Console.WriteLine($"Name: {person.FirstName} {person.LastName}");
-        //        Console.WriteLine($"Street: {person.StreetName}");
-        //        Console.WriteLine($"Postal Code: {person.PostalCode}");
-        //        Console.WriteLine($"City: {person.City}");
-        //        Console.WriteLine($"Email: {person.Email}");
-        //        Console.WriteLine($"Phone: {person.Phone}");
 
-        //        Console.WriteLine();
-        //        Console.WriteLine("Press any key to go back to MENU OPTIONS.");
-        //    }
-        //    else
-        //    {
-        //        Console.WriteLine();
-        //        Console.WriteLine("Contact not found. Press any key to continue.");
-        //    }
+        private async void ShowUserDetailOption()
+        {
+            DisplayMenuTitle("View User Details");
 
-        //    Console.ReadKey();
-        //}
+            Console.Write("Enter the email of the user to view details: ");
+            var emailToView = Console.ReadLine();
+
+            var user = await _userService.GetUserByEmailAsync(emailToView!);
+
+            if (user != null)
+            {
+                Console.WriteLine($"Name: {user.FirstName} {user.LastName}");
+                Console.WriteLine($"Street: {user.StreetName}");
+                Console.WriteLine($"Postal Code: {user.PostalCode}");
+                Console.WriteLine($"City: {user.City}");
+                Console.WriteLine($"Email: {user.Email}");
+                Console.WriteLine($"Role: {user.RoleName}");
+
+                Console.WriteLine();
+                Console.WriteLine("Press any key to go back to MENU OPTIONS.");
+            }
+            else
+            {
+                Console.WriteLine();
+                Console.WriteLine("User not found. Press any key to continue.");
+            }
+
+            Console.ReadKey();
+        }
 
 
 

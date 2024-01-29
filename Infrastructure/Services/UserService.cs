@@ -2,6 +2,7 @@
 using Infrastructure.Entities;
 using Infrastructure.Repositories;
 using System.Diagnostics;
+using System.Linq.Expressions;
 
 namespace Infrastructure.Services;
 
@@ -13,23 +14,22 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
     private readonly AddressRepository _addressRepository = addressRepository;
     private readonly AuthRepository _authRepository = authRepository;
 
-   public bool CreateUser(UserRegistrationDto userRegistrationDto)
+   public async Task<bool> CreateUser(UserRegistrationDto userRegistrationDto)
     {
         try
         {
-            if (_authRepository.Exists(x => x.Email == userRegistrationDto.Email))
+            if (await _authRepository.ExistingAsync(x => x.Email == userRegistrationDto.Email))
             {
                 return false;
             }
 
-           
-            var roleExists = _roleRepository.Exists(x => x.RoleName == userRegistrationDto.RoleName);
+            var roleExists = _roleRepository.ExistingAsync(x => x.RoleName == userRegistrationDto.RoleName);
             int roleId;
 
-            if (roleExists)
+            if (await roleExists)
             {
                 
-                var existsRoleId = _roleRepository.GetOne(x => x.RoleName == userRegistrationDto.RoleName);
+                var existsRoleId = _roleRepository.GetAsync(x => x.RoleName == userRegistrationDto.RoleName);
                 roleId = existsRoleId.Id;
             }
 
@@ -40,23 +40,10 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
                     RoleName = userRegistrationDto.RoleName,
                 };
 
-                var newRole = _roleRepository.Create(roleentity);
+                var newRole = await _roleRepository.Create(roleentity);
                 roleId = newRole.Id;
             }
 
-
-
-
-
-            //var roleEntity = new RoleEntity
-            //{
-            //    RoleName = userRegistrationDto.RoleName,
-            //};
-
-            //var createdRole = _roleRepository.Create(roleEntity);
-
-            //if (createdRole != null)
-            //    return true;
 
             var userEntity = new UserEntity
             {
@@ -65,7 +52,7 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
                 RoleId = roleId,
             };
 
-            var createdUser = _userRepository.Create(userEntity);
+            var createdUser = await _userRepository.Create(userEntity);
 
 
             // result = generera password skall ta in userRegistartionDTO.password
@@ -77,7 +64,7 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
                 Password = userRegistrationDto.Password, //result
             };
 
-            var createdAuth = _authRepository.Create(authEntity);
+            var createdAuth = await _authRepository.Create(authEntity);
 
             var userAddressEntity = new UserAddressEntity
             {
@@ -88,9 +75,7 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
                 
             };
 
-            var createdAddress = _addressRepository.Create(userAddressEntity);
-
-           
+            var createdAddress = await _addressRepository.Create(userAddressEntity);  
 
             var profileEntity = new ProfileEntity
             {
@@ -99,7 +84,7 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
                 LastName = userRegistrationDto.LastName,
             };
 
-            var createdProfile = _profileRepository.Create(profileEntity);
+            var createdProfile = await _profileRepository.Create(profileEntity);
 
             return true;
         }
@@ -107,24 +92,89 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
         return false;
     }
 
-    //public bool GetAllUsers(UserDto userDto)
-    //{
 
-    //}
+    public async Task<IEnumerable<UserDto>> GetAllUsers()
+    {
+        try
+        {
+            var userEntities = await _userRepository.GetAllAsync();
 
-    //public bool GetOneUser(UserDto userDto)
-    //{
+            if (userEntities != null)
+            {
+                var userDtos = userEntities.Select(userEntity => new UserDto
+                {
+                    FirstName = userEntity.Profile.FirstName,
+                    LastName = userEntity.Profile.LastName,
+                    Email = userEntity.Role.RoleName,
 
-    //}
+                }).ToList();
+
+                return userDtos;
+            }
+        }
+        catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }
+
+        return null!;
+    }
+
+
+
+
+public async Task<UserDto> GetUserByEmailAsync(string email)
+    {
+        var user = await _userRepository.GetAsync(x => x.UserAuth.Email == email);
+        if (user != null)
+        {
+            var userDto = new UserDto
+            {
+                FirstName = user.Profile.FirstName,
+                LastName = user.Profile.LastName,
+                Email = user.UserAuth.Email,
+                StreetName = user.UserAddress?.StreetName,
+                PostalCode = user.UserAddress?.PostalCode,
+                City = user.UserAddress?.City,
+                RoleName = user.Role.RoleName
+            };
+
+            return userDto;
+        }
+
+        return null!;
+    }
+
+
 
     //public bool UpdateUser(UserRegistrationDto userRegistrationDto)
     //{
 
     //}
 
-    //public bool DeleteUser(UserRegistrationDto userRegistrationDto)
-    //{
 
-    //}
+    public async Task<bool> DeleteUserByEmail(string email)
+    {
+        try
+        {
+            var user = await _authRepository.GetAsync(u => u.Email == email);
+            if (user != null)
+            {
+                await _userRepository.DeleteAsync(x => x.Id == user.UserId);
+                return true;
+            }
+
+            else
+            {
+                return false;
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine("ERROR :: " + ex.Message);
+            
+        }
+        return false;
+    }
+
+
 
 }

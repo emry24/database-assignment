@@ -106,7 +106,7 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
                 {
                     FirstName = userEntity.Profile.FirstName,
                     LastName = userEntity.Profile.LastName,
-                    Email = userEntity.Role.RoleName,
+                    RoleName = userEntity.Role.RoleName,
 
                 }).ToList();
 
@@ -123,22 +123,26 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
 
 public async Task<UserDto> GetUserByEmailAsync(string email)
     {
-        var user = await _userRepository.GetAsync(x => x.UserAuth.Email == email);
-        if (user != null)
+        try
         {
-            var userDto = new UserDto
+            var user = await _userRepository.GetAsync(x => x.UserAuth.Email == email);
+            if (user != null)
             {
-                FirstName = user.Profile.FirstName,
-                LastName = user.Profile.LastName,
-                Email = user.UserAuth.Email,
-                StreetName = user.UserAddress?.StreetName,
-                PostalCode = user.UserAddress?.PostalCode,
-                City = user.UserAddress?.City,
-                RoleName = user.Role.RoleName
-            };
+                var userDto = new UserDto
+                {
+                    FirstName = user.Profile.FirstName,
+                    LastName = user.Profile.LastName,
+                    Email = user.UserAuth.Email,
+                    StreetName = user.UserAddress?.StreetName,
+                    PostalCode = user.UserAddress?.PostalCode,
+                    City = user.UserAddress?.City,
+                    RoleName = user.Role.RoleName
+                };
 
-            return userDto;
+                return userDto;
+            }
         }
+        catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }
 
         return null!;
     }
@@ -166,11 +170,8 @@ public async Task<UserDto> GetUserByEmailAsync(string email)
                 return false;
             }
         }
-        catch (Exception ex)
-        {
-            Debug.WriteLine("ERROR :: " + ex.Message);
-            return false;
-        }
+        catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }
+        return false;        
     }
 
 
@@ -195,14 +196,9 @@ public async Task<UserDto> GetUserByEmailAsync(string email)
             }
 
         }
-        catch (Exception ex)
-        {
-            Debug.WriteLine("ERROR :: " + ex.Message);
-            
-        }
+        catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }
+
         return false;
     }
-
-
 
 }

@@ -10,7 +10,7 @@ namespace Infrastructure.Services
     {
         private readonly UserService _userService = userService;
 
-        public async Task ShowMainMenu()
+        public void ShowMainMenu()
         {
             while (true)
             {
@@ -31,16 +31,16 @@ namespace Infrastructure.Services
                         ShowAddUserOption();
                         break;
                     case "2":
-                        await ShowViewUserListOption();
+                        ShowViewUserListOption();
                         break;
                     case "3":
                         ShowUserDetailOption();
                         break;
                     case "4":
-                        await ShowUpdateUserOption();
+                        ShowUpdateUserOption();
                         break;
                     case "5":
-                        await ShowDeleteUserOption();
+                        ShowDeleteUserOption();
                         break;
                     case "0":
                         ShowExitApplicationOption();
@@ -101,23 +101,24 @@ namespace Infrastructure.Services
         private async Task ShowUpdateUserOption()
         {
             Console.Clear();
-            Console.WriteLine("Enter User Email: ");
-            var email = Console.ReadLine();
+            Console.Write("Enter User Email: ");
+            var emailToView = Console.ReadLine();
 
-            var existingUser = await _userService.GetUserByEmailAsync(email!);
-            if (existingUser != null)
+            var user = await _userService.GetUserByEmailAsync(emailToView!);
+
+            if (user != null)
             {
-                Console.WriteLine($"Current Address Details for {existingUser.FirstName} {existingUser.LastName}:");
-                Console.WriteLine($"Street: {existingUser.StreetName}");
-                Console.WriteLine($"Postal Code: {existingUser.PostalCode}");
-                Console.WriteLine($"City: {existingUser.City}");
+                Console.WriteLine($"Name: {user.FirstName} {user.LastName}");
+                Console.WriteLine($"Street Name: {user.StreetName}");
+                Console.WriteLine($"Postal Code: {user.PostalCode}");
+                Console.WriteLine($"City: {user.City}");
 
-                Console.WriteLine("\nEnter Updated Address Details:");
+                Console.WriteLine("\nEnter Updated Address Details: ");
 
                 var updatedAddress = new UserRegistrationDto
                 {
-                    Email = email!, 
-                    StreetName = GetUserInput("Street: "),
+                    Email = emailToView!, 
+                    StreetName = GetUserInput("Street Name: "),
                     PostalCode = GetUserInput("Postal Code: "),
                     City = GetUserInput("City: ")
                 };
@@ -137,7 +138,7 @@ namespace Infrastructure.Services
                 Console.WriteLine("\nUser not found.");
             }
 
-            Console.WriteLine("\nPress any key to continue...");
+            Console.WriteLine("\nPress any key to continue.");
             Console.ReadKey();
         }
 
@@ -204,7 +205,7 @@ namespace Infrastructure.Services
             if (user != null)
             {
                 Console.WriteLine($"Name: {user.FirstName} {user.LastName}");
-                Console.WriteLine($"Street: {user.StreetName}");
+                Console.WriteLine($"Street Name: {user.StreetName}");
                 Console.WriteLine($"Postal Code: {user.PostalCode}");
                 Console.WriteLine($"City: {user.City}");
                 Console.WriteLine($"Email: {user.Email}");

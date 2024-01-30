@@ -1,4 +1,6 @@
 ﻿using Infrastructure.Dtos;
+using Infrastructure.Entities;
+using Infrastructure.Repositories;
 using System.Transactions;
 
 namespace Infrastructure.Services
@@ -8,7 +10,7 @@ namespace Infrastructure.Services
     {
         private readonly UserService _userService = userService;
 
-        public void ShowMainMenu()
+        public async Task ShowMainMenu()
         {
             while (true)
             {
@@ -29,16 +31,16 @@ namespace Infrastructure.Services
                         ShowAddUserOption();
                         break;
                     case "2":
-                        ShowViewUserListOption();
+                        await ShowViewUserListOption();
                         break;
                     case "3":
                         ShowUserDetailOption();
                         break;
-                    //case "4":
-                    //    ShowUpdateUserOption();
-                    //    break;
+                    case "4":
+                        await ShowUpdateUserOption();
+                        break;
                     case "5":
-                        ShowDeleteUserOption();
+                        await ShowDeleteUserOption();
                         break;
                     case "0":
                         ShowExitApplicationOption();
@@ -53,6 +55,7 @@ namespace Infrastructure.Services
             }
 
         }
+
         private async void ShowAddUserOption()
         {
             UserRegistrationDto userData = new UserRegistrationDto();
@@ -95,18 +98,53 @@ namespace Infrastructure.Services
         }
 
 
-        //private void ShowUpdateUserOption()
-        //{
-        //    Console.Clear();
-        //    Console.WriteLine("Enter User Id: ");
-        //    var id = int.Parse(Console.ReadLine()!);
+        private async Task ShowUpdateUserOption()
+        {
+            Console.Clear();
+            Console.WriteLine("Enter User Email: ");
+            var email = Console.ReadLine();
 
-        //    var user = _userService.GetUserById(id);
-        //    if (user != null)
-        //    {
-        //        Console.WriteLine($"{user.FirstName} {user.LastName} {user.Email}");
-        //    }
-        //}
+            var existingUser = await _userService.GetUserByEmailAsync(email!);
+            if (existingUser != null)
+            {
+                Console.WriteLine($"Current Address Details for {existingUser.FirstName} {existingUser.LastName}:");
+                Console.WriteLine($"Street: {existingUser.StreetName}");
+                Console.WriteLine($"Postal Code: {existingUser.PostalCode}");
+                Console.WriteLine($"City: {existingUser.City}");
+
+                Console.WriteLine("\nEnter Updated Address Details:");
+
+                var updatedAddress = new UserRegistrationDto
+                {
+                    Email = email!, 
+                    StreetName = GetUserInput("Street: "),
+                    PostalCode = GetUserInput("Postal Code: "),
+                    City = GetUserInput("City: ")
+                };
+
+                var success = await _userService.UpdateUserAddress(updatedAddress);
+                if (success)
+                {
+                    Console.WriteLine("\nAddress updated successfully!");
+                }
+                else
+                {
+                    Console.WriteLine("\nFailed to update address.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("\nUser not found.");
+            }
+
+            Console.WriteLine("\nPress any key to continue...");
+            Console.ReadKey();
+        }
+
+
+
+
+
 
 
         private async Task ShowDeleteUserOption()
@@ -203,6 +241,11 @@ namespace Infrastructure.Services
             Console.WriteLine();
         }
 
+        private string GetUserInput(string prompt)
+        {
+            Console.Write(prompt);
+            return Console.ReadLine()!;
+        }
 
     }
 }

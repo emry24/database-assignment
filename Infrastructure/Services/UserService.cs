@@ -1,6 +1,7 @@
 ﻿using Infrastructure.Dtos;
 using Infrastructure.Entities;
 using Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Linq.Expressions;
 
@@ -144,10 +145,37 @@ public async Task<UserDto> GetUserByEmailAsync(string email)
 
 
 
-    //public bool UpdateUser(UserRegistrationDto userRegistrationDto)
-    //{
+    public async Task<bool> UpdateUserAddress(UserRegistrationDto updatedAddressDto)
+    {
+        try
+        {
+            var user = await _authRepository.GetAsync(u => u.Email == updatedAddressDto.Email);
+            if (user != null)
+            {
+                var userAddressEntity = await _addressRepository.GetAsync(a => a.UserId == user.UserId);
+                userAddressEntity.StreetName = updatedAddressDto.StreetName;
+                userAddressEntity.PostalCode = updatedAddressDto.PostalCode;
+                userAddressEntity.City = updatedAddressDto.City;
 
-    //}
+                var updatedAddress = await _addressRepository.UpdateAsync(a => a.UserId == userAddressEntity.UserId, userAddressEntity);
+
+                return updatedAddress != null;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine("ERROR :: " + ex.Message);
+            return false;
+        }
+    }
+
+
+
+
 
 
     public async Task<bool> DeleteUserByEmail(string email)

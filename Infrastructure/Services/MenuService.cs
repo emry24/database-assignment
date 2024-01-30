@@ -18,7 +18,7 @@ namespace Infrastructure.Services
                 Console.WriteLine($"{"1.",-4} Add New User");
                 Console.WriteLine($"{"2.",-4} Wiew Users");
                 Console.WriteLine($"{"3.",-4} Wiew User Details");
-                Console.WriteLine($"{"4.",-4} Update User Details");
+                Console.WriteLine($"{"4.",-4} Update User Address");
                 Console.WriteLine($"{"5.",-4} Delete User");
                 Console.WriteLine($"{"0.",-4} Exit Application");
                 Console.WriteLine();
@@ -28,19 +28,20 @@ namespace Infrastructure.Services
                 switch (option)
                 {
                     case "1":
-                        ShowAddUserOption();
+                        ShowAddUserOption().ConfigureAwait(false).GetAwaiter().GetResult();
+
                         break;
                     case "2":
-                        ShowViewUserListOption();
+                        ShowViewUserListOption().ConfigureAwait(false).GetAwaiter().GetResult();
                         break;
                     case "3":
-                        ShowUserDetailOption();
+                        ShowUserDetailOption().ConfigureAwait(false).GetAwaiter().GetResult();
                         break;
                     case "4":
-                        ShowUpdateUserOption();
+                        ShowUpdateUserOption().ConfigureAwait(false).GetAwaiter().GetResult();
                         break;
                     case "5":
-                        ShowDeleteUserOption();
+                        ShowDeleteUserOption().ConfigureAwait(false).GetAwaiter().GetResult();
                         break;
                     case "0":
                         ShowExitApplicationOption();
@@ -56,8 +57,9 @@ namespace Infrastructure.Services
 
         }
 
-        private async void ShowAddUserOption()
+        private async Task<bool> ShowAddUserOption()
         {
+
             UserRegistrationDto userData = new UserRegistrationDto();
 
 
@@ -90,18 +92,36 @@ namespace Infrastructure.Services
             await _userService.CreateUser(userData);
 
             Console.Clear();
-            Console.WriteLine();
-            Console.WriteLine("User added successfully. Press any key to continue.");
-
+            Console.WriteLine("\nUser added successfully. Press any key to continue.");
             Console.ReadKey();
+
+            return true;
 
         }
 
 
-        private async Task ShowUpdateUserOption()
+        private async Task ShowViewUserListOption()
         {
-            Console.Clear();
-            Console.Write("Enter User Email: ");
+            var users = await _userService.GetAllUsers();
+
+            DisplayMenuTitle("User List");
+
+            foreach (var item in users)
+            {
+                Console.WriteLine($"{item.FirstName} {item.LastName}, {item.RoleName}");
+            }
+
+            Console.WriteLine("\nPress any key to go back to MENU OPTIONS.");
+
+            Console.ReadKey();
+        }
+
+
+        private async Task ShowUserDetailOption()
+        {
+            DisplayMenuTitle("View User Details");
+
+            Console.Write("Enter the email of the user to view details: ");
             var emailToView = Console.ReadLine();
 
             var user = await _userService.GetUserByEmailAsync(emailToView!);
@@ -112,34 +132,75 @@ namespace Infrastructure.Services
                 Console.WriteLine($"Street Name: {user.StreetName}");
                 Console.WriteLine($"Postal Code: {user.PostalCode}");
                 Console.WriteLine($"City: {user.City}");
+                Console.WriteLine($"Email: {user.Email}");
+                Console.WriteLine($"Role: {user.RoleName}");
 
-                Console.WriteLine("\nEnter Updated Address Details: ");
-
-                var updatedAddress = new UserRegistrationDto
-                {
-                    Email = emailToView!, 
-                    StreetName = GetUserInput("Street Name: "),
-                    PostalCode = GetUserInput("Postal Code: "),
-                    City = GetUserInput("City: ")
-                };
-
-                var success = await _userService.UpdateUserAddress(updatedAddress);
-                if (success)
-                {
-                    Console.WriteLine("\nAddress updated successfully!");
-                }
-                else
-                {
-                    Console.WriteLine("\nFailed to update address.");
-                }
+                Console.WriteLine("\nPress any key to go back to MENU OPTIONS.");
             }
             else
             {
-                Console.WriteLine("\nUser not found.");
+                Console.WriteLine("\nUser not found. Press any key to continue.");
             }
 
-            Console.WriteLine("\nPress any key to continue.");
             Console.ReadKey();
+        }
+
+
+        private async Task ShowUpdateUserOption()
+        {
+
+                Console.Clear();
+                DisplayMenuTitle("Update User");
+
+                Console.Write("Enter User Email: ");
+                var emailToView = Console.ReadLine();
+
+                var user = await _userService.GetUserByEmailAsync(emailToView!);
+
+                if (user != null)
+                {
+                    Console.WriteLine($"Name: {user.FirstName} {user.LastName}");
+                    Console.WriteLine($"Street Name: {user.StreetName}");
+                    Console.WriteLine($"Postal Code: {user.PostalCode}");
+                    Console.WriteLine($"City: {user.City}");
+
+                    Console.WriteLine("\nEnter Updated Address Details: ");
+
+                    Console.Write("Street Name: ");
+                    var streetName = Console.ReadLine();
+
+                    Console.Write("Postal Code: ");
+                    var postalCode = Console.ReadLine();
+
+                    Console.Write("City: ");
+                    var city = Console.ReadLine();
+
+                    var updatedAddress = new UserRegistrationDto
+                    {
+                        Email = emailToView!,
+                        StreetName = streetName,
+                        PostalCode = postalCode,
+                        City = city
+                    };
+
+                    var success = await _userService.UpdateUserAddress(updatedAddress);
+                    if (success)
+                    {
+                        Console.WriteLine("\nAddress updated successfully!");
+                    }
+                    else
+                    {
+                        Console.WriteLine("\nFailed to update address.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("\nUser not found.");
+                }
+
+                Console.WriteLine("\nPress any key to continue.");
+                Console.ReadKey();
+
         }
 
 
@@ -159,68 +220,15 @@ namespace Infrastructure.Services
 
             if (await _userService.DeleteUserByEmail(emailToDelete!))
             {
-                Console.WriteLine();
-                Console.WriteLine("User deleted successfully. Press any key to continue.");
+                Console.WriteLine("\nUser deleted successfully. Press any key to continue.");
             }
             else
             {
-                Console.WriteLine();
-                Console.WriteLine("User not found. Press any key to continue.");
+                Console.WriteLine("\nUser not found. Press any key to continue.");
             }
 
             Console.ReadKey();
 
-        }
-
-
-
-        private async Task ShowViewUserListOption()
-        {
-            var users = await _userService.GetAllUsers();
-
-            DisplayMenuTitle("User List");
-
-            foreach (var item in users)
-            {
-                Console.WriteLine($"{item.FirstName} {item.LastName}, {item.RoleName}");
-            }
-
-            Console.WriteLine();
-            Console.WriteLine("Press any key to go back to MENU OPTIONS.");
-
-            Console.ReadKey();
-        }
-
-
-
-        private async void ShowUserDetailOption()
-        {
-            DisplayMenuTitle("View User Details");
-
-            Console.Write("Enter the email of the user to view details: ");
-            var emailToView = Console.ReadLine();
-
-            var user = await _userService.GetUserByEmailAsync(emailToView!);
-
-            if (user != null)
-            {
-                Console.WriteLine($"Name: {user.FirstName} {user.LastName}");
-                Console.WriteLine($"Street Name: {user.StreetName}");
-                Console.WriteLine($"Postal Code: {user.PostalCode}");
-                Console.WriteLine($"City: {user.City}");
-                Console.WriteLine($"Email: {user.Email}");
-                Console.WriteLine($"Role: {user.RoleName}");
-
-                Console.WriteLine();
-                Console.WriteLine("Press any key to go back to MENU OPTIONS.");
-            }
-            else
-            {
-                Console.WriteLine();
-                Console.WriteLine("User not found. Press any key to continue.");
-            }
-
-            Console.ReadKey();
         }
 
 
@@ -242,11 +250,7 @@ namespace Infrastructure.Services
             Console.WriteLine();
         }
 
-        private string GetUserInput(string prompt)
-        {
-            Console.Write(prompt);
-            return Console.ReadLine()!;
-        }
+
 
     }
 }

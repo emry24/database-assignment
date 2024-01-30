@@ -24,13 +24,13 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
                 return false;
             }
 
-            var roleExists = _roleRepository.ExistingAsync(x => x.RoleName == userRegistrationDto.RoleName);
+            var roleExists = await _roleRepository.ExistingAsync(x => x.RoleName == userRegistrationDto.RoleName);
             int roleId;
 
-            if (await roleExists)
+            if (roleExists)
             {
                 
-                var existsRoleId = _roleRepository.GetAsync(x => x.RoleName == userRegistrationDto.RoleName);
+                var existsRoleId = await _roleRepository.GetAsync(x => x.RoleName == userRegistrationDto.RoleName);
                 roleId = existsRoleId.Id;
             }
 
@@ -62,7 +62,7 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
             {
                 UserId = createdUser.Id,
                 Email = userRegistrationDto.Email,
-                Password = userRegistrationDto.Password, //result
+                Password = userRegistrationDto.Password,
             };
 
             var createdAuth = await _authRepository.Create(authEntity);
@@ -121,7 +121,7 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
 
 
 
-public async Task<UserDto> GetUserByEmailAsync(string email)
+    public async Task<UserDto> GetUserByEmailAsync(string email)
     {
         try
         {

@@ -2,8 +2,9 @@
 using Infrastructure.Entities;
 using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 using System.Diagnostics;
-using System.Linq.Expressions;
+
 
 namespace Infrastructure.Services;
 
@@ -15,7 +16,7 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
     private readonly AddressRepository _addressRepository = addressRepository;
     private readonly AuthRepository _authRepository = authRepository;
 
-   public async Task<bool> CreateUser(UserRegistrationDto userRegistrationDto)
+   public async Task<bool> CreateUserAsync(UserRegistrationDto userRegistrationDto)
     {
         try
         {
@@ -94,7 +95,7 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
     }
 
 
-    public async Task<IEnumerable<UserDto>> GetAllUsers()
+    public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
     {
         try
         {
@@ -117,7 +118,6 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
 
         return null!;
     }
-
 
 
 
@@ -149,13 +149,19 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
 
 
 
-    public async Task<bool> UpdateUserAddress(UserRegistrationDto updatedAddressDto)
+    public async Task<bool> UpdateUserAddressAsync(UserDto updatedAddressDto)
     {
         try
         {
             var user = await _authRepository.GetAsync(u => u.Email == updatedAddressDto.Email);
             if (user != null)
             {
+                var profileEntity = await _profileRepository.GetAsync(p => p.UserId == user.UserId);
+                profileEntity.FirstName = updatedAddressDto.FirstName;
+                profileEntity.LastName = updatedAddressDto.LastName;
+
+                var updatedProfile = await _profileRepository.UpdateAsync(p => p.UserId == profileEntity.UserId, profileEntity);
+
                 var userAddressEntity = await _addressRepository.GetAsync(a => a.UserId == user.UserId);
                 userAddressEntity.StreetName = updatedAddressDto.StreetName;
                 userAddressEntity.PostalCode = updatedAddressDto.PostalCode;
@@ -163,7 +169,7 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
 
                 var updatedAddress = await _addressRepository.UpdateAsync(a => a.UserId == userAddressEntity.UserId, userAddressEntity);
 
-                return updatedAddress != null;
+                return updatedProfile != null && updatedAddress != null;
             }
             else
             {
@@ -174,12 +180,41 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
         return false;        
     }
 
+    public async Task<bool> UpdateUserRoleAsync(string userEmail, string roleName)
+    {
+        try
+        {
+            var userAuth = await _authRepository.GetAsync(u => u.Email == userEmail);
+            if (userAuth != null)
+            {
+                var user = await _userRepository.GetAsync(u => u.Id == userAuth.UserId);
+
+                if (user != null)
+                {
+                    var role = await _roleRepository.GetAsync(r => r.RoleName == roleName);
+                    if (role != null)
+                    {
+                        user.RoleId = role.Id;
+                        var updatedUser = await _userRepository.UpdateAsync(u => u.Id == user.Id, user);
+
+                        return updatedUser != null;
+                    }
+                }
+            }
+
+            return false;
+        }
+        catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }
+        return false; 
+    }
 
 
 
 
 
-    public async Task<bool> DeleteUserByEmail(string email)
+
+
+    public async Task<bool> DeleteUserByEmailAsync(string email)
     {
         try
         {
@@ -197,8 +232,6 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
 
         }
         catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }
-
         return false;
     }
-
 }

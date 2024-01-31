@@ -3,7 +3,6 @@
 
 public class UserRegistrationDto
 {
-    //public Guid Id { get; set; } = new Guid();
 
     public string FirstName { get; set; } = null!;
 
@@ -16,8 +15,6 @@ public class UserRegistrationDto
     public string? City { get; set; }
 
     public string RoleName { get; set; } = null!;
-
-    //public int RoleId { get; set; }
 
     public string Email { get; set; } = null!;
 

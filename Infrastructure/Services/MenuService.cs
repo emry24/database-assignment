@@ -1,4 +1,7 @@
 ﻿using Infrastructure.Dtos;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Diagnostics;
 
 namespace Infrastructure.Services
 {
@@ -25,7 +28,6 @@ namespace Infrastructure.Services
                 {
                     case "1":
                         ShowAddUserOption().ConfigureAwait(false).GetAwaiter().GetResult();
-
                         break;
                     case "2":
                         ShowViewUserListOption().ConfigureAwait(false).GetAwaiter().GetResult();
@@ -102,7 +104,7 @@ namespace Infrastructure.Services
                 Console.WriteLine($"{item.FirstName} {item.LastName}, {item.RoleName}");
             }
 
-            Console.WriteLine("\nPress any key to go back to MENU OPTIONS.");
+            Console.WriteLine("\nPress any key to continue.");
             Console.ReadKey();
         }
 
@@ -117,6 +119,7 @@ namespace Infrastructure.Services
 
             if (user != null)
             {
+                Console.Clear();
                 Console.WriteLine($"Name: {user.FirstName} {user.LastName}");
                 Console.WriteLine($"Street Name: {user.StreetName}");
                 Console.WriteLine($"Postal Code: {user.PostalCode}");
@@ -124,13 +127,14 @@ namespace Infrastructure.Services
                 Console.WriteLine($"Email: {user.Email}");
                 Console.WriteLine($"Role: {user.RoleName}");
 
-                Console.WriteLine("\nPress any key to go back to MENU OPTIONS.");
+                Console.WriteLine("\nPress any key to continue.");
             }
             else
             {
-                Console.WriteLine("\nUser not found. Press any key to continue.");
+                Console.Clear();
+                Console.WriteLine("\nUser not found.");
             }
-
+            Console.WriteLine("\nPress any key to continue.");
             Console.ReadKey();
         }
 
@@ -155,9 +159,9 @@ namespace Infrastructure.Services
                     case "2":
                         ShowUpdateRoleOption().ConfigureAwait(false).GetAwaiter().GetResult();
                         break;
-                    //case "3":
-                    //    ShowUpdateUserAuthOption().ConfigureAwait(false).GetAwaiter().GetResult();
-                    //    break;
+                    case "3":
+                        ShowUpdateUserAuthOption().ConfigureAwait(false).GetAwaiter().GetResult();
+                        break;
                     case "0":
                         ShowMainMenu();
                         break;
@@ -172,65 +176,69 @@ namespace Infrastructure.Services
         private async Task ShowUpdateContactOption()
         {
 
+            Console.Clear();
+            DisplayMenuTitle("Update Contact Information");
+
+            Console.Write("Enter User Email: ");
+            var emailToView = Console.ReadLine();
+
+            var user = await _userService.GetUserByEmailAsync(emailToView!);
+
+            if (user != null)
+            {
                 Console.Clear();
-                DisplayMenuTitle("Update Contact Information");
+                Console.WriteLine($"Name: {user.FirstName} {user.LastName}");
+                Console.WriteLine($"Street Name: {user.StreetName}");
+                Console.WriteLine($"Postal Code: {user.PostalCode}");
+                Console.WriteLine($"City: {user.City}");
 
-                Console.Write("Enter User Email: ");
-                var emailToView = Console.ReadLine();
+                Console.WriteLine("\nEnter Updated Address Details: ");
 
-                var user = await _userService.GetUserByEmailAsync(emailToView!);
+                Console.Write("First Name: ");
+                var firstName = Console.ReadLine();
 
-                if (user != null)
-                {
-                    Console.WriteLine($"Name: {user.FirstName} {user.LastName}");
-                    Console.WriteLine($"Street Name: {user.StreetName}");
-                    Console.WriteLine($"Postal Code: {user.PostalCode}");
-                    Console.WriteLine($"City: {user.City}");
-
-                    Console.WriteLine("\nEnter Updated Address Details: ");
-
-                    Console.Write("First Name: ");
-                    var firstName = Console.ReadLine();
-
-                    Console.Write("Last Name: ");
-                    var lastName = Console.ReadLine();
+                Console.Write("Last Name: ");
+                var lastName = Console.ReadLine();
 
                 Console.Write("Street Name: ");
-                    var streetName = Console.ReadLine();
+                var streetName = Console.ReadLine();
 
-                    Console.Write("Postal Code: ");
-                    var postalCode = Console.ReadLine();
+                Console.Write("Postal Code: ");
+                var postalCode = Console.ReadLine();
 
-                    Console.Write("City: ");
-                    var city = Console.ReadLine();
+                Console.Write("City: ");
+                var city = Console.ReadLine();
 
-                    var updatedAddress = new UserDto
-                    {
-                        Email = emailToView!,
-                        FirstName = firstName!,
-                        LastName = lastName!,
-                        StreetName = streetName,
-                        PostalCode = postalCode,
-                        City = city
-                    };
+                var updatedAddress = new UserDto
+                {
+                    Email = emailToView!,
+                    FirstName = firstName!,
+                    LastName = lastName!,
+                    StreetName = streetName,
+                    PostalCode = postalCode,
+                    City = city
+                };
 
-                    var success = await _userService.UpdateUserAddressAsync(updatedAddress);
-                    if (success)
-                    {
-                        Console.WriteLine("\nContact information updated successfully!");
-                    }
-                    else
-                    {
-                        Console.WriteLine("\nFailed to update contact information.");
-                    }
+                var success = await _userService.UpdateUserAddressAsync(updatedAddress);
+                if (success)
+                {
+                Console.Clear();
+                Console.WriteLine("\nContact information updated successfully!");
                 }
                 else
                 {
-                    Console.WriteLine("\nUser not found.");
+                Console.Clear();
+                Console.WriteLine("\nFailed to update contact information.");
                 }
+            }
+            else
+            {
+            Console.Clear();
+            Console.WriteLine("\nUser not found.");
+            }
 
-                Console.WriteLine("\nPress any key to continue.");
-                Console.ReadKey();
+            Console.WriteLine("\nPress any key to continue.");
+            Console.ReadKey();
         }
 
         private async Task ShowUpdateRoleOption()
@@ -245,6 +253,7 @@ namespace Infrastructure.Services
 
             if (user != null)
             {
+                Console.Clear();
                 Console.WriteLine($"User Name: {user.FirstName} {user.LastName}");
                 Console.WriteLine($"Role Name: {user.RoleName}");
 
@@ -262,21 +271,71 @@ namespace Infrastructure.Services
                 var success = await _userService.UpdateUserRoleAsync(emailToView!, roleName!);
                 if (success)
                 {
+                    Console.Clear();
                     Console.WriteLine("\nUser role updated successfully!");
                 }
                 else
                 {
+                    Console.Clear();
                     Console.WriteLine("\nFailed to update user role.");
                 }
             }
             else
             {
+                Console.Clear();
                 Console.WriteLine("\nUser not found.");
             }
 
             Console.WriteLine("\nPress any key to continue.");
             Console.ReadKey();
         }
+
+        private async Task ShowUpdateUserAuthOption()
+        {
+            Console.Clear();
+            DisplayMenuTitle("Update User Authentication");
+
+            Console.Write("\nEnter User Email: ");
+            var emailToUpdate = Console.ReadLine();
+
+            var user = await _userService.GetUserByEmailAsync(emailToUpdate!);
+
+            if (user != null)
+            {
+                Console.Clear();
+                Console.WriteLine($"User Name: {user.FirstName} {user.LastName}");
+
+                Console.WriteLine("\nEnter New User Authentication Details: ");
+
+                Console.Write("New Email: ");
+                var newEmail = Console.ReadLine();
+
+                Console.Write("New Password: ");
+                var newPassword = Console.ReadLine();
+
+                var updatedUserDto = new UserRegistrationDto
+                {
+                    Email = newEmail!,
+                    Password = newPassword!
+                };
+
+                var success = await _userService.UpdateUserAuthAsync(emailToUpdate!, updatedUserDto);
+                if (success)
+                {
+                    Console.Clear();
+                    Console.WriteLine("\nUser authentication details updated successfully!");
+                }
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine("\nFailed to update user authentication details.");
+                }
+
+                Console.WriteLine("\nPress any key to continue.");
+                Console.ReadKey();
+            }
+        }
+
 
         private async Task ShowDeleteUserOption()
         {
@@ -291,9 +350,10 @@ namespace Infrastructure.Services
             }
             else
             {
-                Console.WriteLine("\nUser not found. Press any key to continue.");
+                Console.WriteLine("\nUser not found.");
             }
 
+            Console.WriteLine("\nPress any key to continue.");
             Console.ReadKey();
         }
 

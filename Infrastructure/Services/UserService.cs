@@ -208,6 +208,29 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
         return false; 
     }
 
+    public async Task<bool> UpdateUserAuthAsync(string userEmail, UserRegistrationDto updatedUserDto)
+    {
+        try
+        {
+            var user = await _authRepository.GetAsync(u => u.Email == userEmail);
+            if (user != null)
+            {
+            //    var userAuthEntity = await _authRepository.GetAsync(p => p.UserId == user.UserId);
+                user.Email = updatedUserDto.Email;
+                user.Password = updatedUserDto.Password;
+
+                var updatedAuth = await _authRepository.UpdateAsync(p => p.UserId == user.UserId, user);
+
+                return updatedAuth != null;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }
+        return false; 
+    }
 
 
 

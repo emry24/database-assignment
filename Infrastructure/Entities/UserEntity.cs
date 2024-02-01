@@ -5,7 +5,6 @@ namespace Infrastructure.Entities;
 
 public class UserEntity
 {
-
     [Key]
     public Guid Id { get; set; }
 
@@ -13,13 +12,9 @@ public class UserEntity
     [Column(TypeName = "datetime2")]
     public DateTime Created { get; set; }
 
-
-
     [Required]
     [Column(TypeName = "datetime2")]
     public DateTime Modified { get; set; }
-
-    
 
     [Required]
     [ForeignKey(nameof(RoleEntity))]

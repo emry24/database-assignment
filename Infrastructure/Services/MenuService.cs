@@ -1,7 +1,4 @@
 ﻿using Infrastructure.Dtos;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Diagnostics;
 
 namespace Infrastructure.Services
 {
@@ -36,7 +33,7 @@ namespace Infrastructure.Services
                         ShowUserDetailOption().ConfigureAwait(false).GetAwaiter().GetResult();
                         break;
                     case "4":
-                        ShowUpdateUserOption(); //.ConfigureAwait(false).GetAwaiter().GetResult();
+                        ShowUpdateUserMenu();
                         break;
                     case "5":
                         ShowDeleteUserOption().ConfigureAwait(false).GetAwaiter().GetResult();
@@ -54,9 +51,7 @@ namespace Infrastructure.Services
 
         private async Task<bool> ShowAddUserOption()
         {
-
             UserRegistrationDto userData = new UserRegistrationDto();
-
 
             DisplayMenuTitle("Add New User");
 
@@ -138,7 +133,7 @@ namespace Infrastructure.Services
             Console.ReadKey();
         }
 
-        private void ShowUpdateUserOption()
+        private void ShowUpdateUserMenu()
         {
             while (true)
             {
@@ -335,7 +330,6 @@ namespace Infrastructure.Services
                 Console.ReadKey();
             }
         }
-
 
         private async Task ShowDeleteUserOption()
         {

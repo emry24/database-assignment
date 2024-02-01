@@ -1,9 +1,7 @@
 ﻿namespace Infrastructure.Dtos;
 
-
 public class UserRegistrationDto
 {
-
     public string FirstName { get; set; } = null!;
 
     public string LastName { get; set; } = null!;
@@ -21,7 +19,5 @@ public class UserRegistrationDto
     public string Password { get; set; } = null!;
 
     //public DateTime Created { get; set; } = DateTime.Now;
-
-
 
 }

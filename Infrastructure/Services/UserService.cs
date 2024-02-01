@@ -29,12 +29,10 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
             int roleId;
 
             if (roleExists)
-            {
-                
+            { 
                 var existsRoleId = await _roleRepository.GetAsync(x => x.RoleName == userRegistrationDto.RoleName);
                 roleId = existsRoleId.Id;
             }
-
             else
             {
                 var roleentity = new RoleEntity
@@ -46,7 +44,6 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
                 roleId = newRole.Id;
             }
 
-
             var userEntity = new UserEntity
             {
                 Id = Guid.NewGuid(),
@@ -55,7 +52,6 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
             };
 
             var createdUser = await _userRepository.Create(userEntity);
-
 
             // result = generera password skall ta in userRegistartionDTO.password
 
@@ -73,8 +69,7 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
                 UserId = createdUser.Id,
                 StreetName = userRegistrationDto.StreetName,
                 PostalCode = userRegistrationDto.PostalCode,
-                City = userRegistrationDto.City,
-                
+                City = userRegistrationDto.City,   
             };
 
             var createdAddress = await _addressRepository.Create(userAddressEntity);  
@@ -93,7 +88,6 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
         catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }
         return false;
     }
-
 
     public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
     {
@@ -115,11 +109,8 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
             }
         }
         catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }
-
         return null!;
     }
-
-
 
     public async Task<UserDto> GetUserByEmailAsync(string email)
     {
@@ -143,11 +134,8 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
             }
         }
         catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }
-
         return null!;
     }
-
-
 
     public async Task<bool> UpdateUserAddressAsync(UserDto updatedAddressDto)
     {
@@ -215,7 +203,6 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
             var user = await _authRepository.GetAsync(u => u.Email == userEmail);
             if (user != null)
             {
-            //    var userAuthEntity = await _authRepository.GetAsync(p => p.UserId == user.UserId);
                 user.Email = updatedUserDto.Email;
                 user.Password = updatedUserDto.Password;
 
@@ -232,11 +219,6 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
         return false; 
     }
 
-
-
-
-
-
     public async Task<bool> DeleteUserByEmailAsync(string email)
     {
         try
@@ -247,12 +229,10 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
                 await _userRepository.DeleteAsync(x => x.Id == user.UserId);
                 return true;
             }
-
             else
             {
                 return false;
             }
-
         }
         catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }
         return false;

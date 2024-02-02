@@ -1,6 +1,4 @@
-﻿
-
-using Infrastructure.Contexts;
+﻿using Infrastructure.Contexts;
 using Infrastructure.Entities;
 
 namespace Infrastructure.Repositories;
@@ -9,6 +7,8 @@ public class AddressRepository(DataContext context) : BaseRepository<UserAddress
 {
     private readonly DataContext _context = context;
 }
+
+
 
 
 

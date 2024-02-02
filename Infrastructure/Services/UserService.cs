@@ -87,7 +87,7 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
         }
         catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }
         return false;
-    }
+   }
 
     public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
     {

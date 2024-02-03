@@ -2,11 +2,138 @@
 
 namespace Infrastructure.Services
 {
-    public class MenuService(UserService userService)
+    public class MenuService(ProductService productService, UserService userService)
     {
+        private readonly ProductService _productService = productService;
         private readonly UserService _userService = userService;
 
         public void ShowMainMenu()
+        {
+            while (true)
+            {
+                DisplayMenuTitle("MENU OPTIONS");
+                Console.WriteLine($"{"1.",-4} Manage Products");
+                Console.WriteLine($"{"2.",-4} Manage Users");
+                Console.WriteLine($"{"0.",-4} Exit Application");
+                Console.WriteLine();
+                Console.Write("Enter Menu Option: ");
+                var option = Console.ReadLine();
+
+                switch (option)
+                {
+                    case "1":
+                        ShowMainMenuProducts();
+                        break;
+                    case "2":
+                        ShowMainMenuUsers();
+                        break;
+
+                    case "0":
+                        ShowExitApplicationOption();
+                        break;
+                    default:
+                        Console.WriteLine("\nInvalid option selected. Press any key to continue.");
+                        Console.ReadKey();
+                        break;
+                }
+            }
+        }
+
+        private void ShowMainMenuProducts() 
+        {
+            while (true)
+            {
+                DisplayMenuTitle("MENU OPTIONS");
+                Console.WriteLine($"{"1.",-4} Add New Product");
+                Console.WriteLine($"{"2.",-4} Wiew Products");
+                Console.WriteLine($"{"3.",-4} Wiew Product Details");
+                Console.WriteLine($"{"4.",-4} Update Product");
+                Console.WriteLine($"{"5.",-4} Delete Product");
+                Console.WriteLine($"{"0.",-4} Go back to main menu");
+                Console.WriteLine();
+                Console.Write("Enter Menu Option: ");
+                var option = Console.ReadLine();
+
+                switch (option)
+                {
+                    case "1":
+                        ShowAddProductOption().ConfigureAwait(false).GetAwaiter().GetResult();
+                        break;
+                    //case "2":
+                    //    ShowViewProductListOption().ConfigureAwait(false).GetAwaiter().GetResult();
+                    //    break;
+                    //case "3":
+                    //    ShowProductDetailOption().ConfigureAwait(false).GetAwaiter().GetResult();
+                    //    break;
+                    //case "4":
+                    //    ShowUpdateProductMenu();
+                    //    break;
+                    //case "5":
+                    //    ShowDeleteProductOption().ConfigureAwait(false).GetAwaiter().GetResult();
+                    //    break;
+                    case "0":
+                        ShowMainMenu();
+                        break;
+                    default:
+                        Console.WriteLine("\nInvalid option selected. Press any key to continue.");
+                        Console.ReadKey();
+                        break;
+                }
+            }
+        }
+
+        private async Task<bool> ShowAddProductOption()
+        {
+            ProductDto productData = new ProductDto();
+
+            DisplayMenuTitle("Add New Product");
+
+            Console.Write("Product Title: ");
+            productData.ProductTitle = Console.ReadLine()!;
+
+            Console.Write("Ingress: ");
+            productData.Ingress = Console.ReadLine()!;
+
+            Console.Write("Description: ");
+            productData.Description = Console.ReadLine()!;
+
+            Console.Write("Specification: ");
+            productData.Specification = Console.ReadLine()!;
+
+            Console.Write("Article Number: ");
+            productData.ArticleNumber = Console.ReadLine()!;
+
+            Console.Write("Category Name: ");
+            productData.CategoryName = Console.ReadLine()!;
+
+            Console.Write("Manufacture: ");
+            productData.ManufactureName = Console.ReadLine()!;
+
+            //Console.Write("Price: ");
+            //productData.Price = Console.ReadLine
+            //
+
+            Console.Write("Price: ");
+            string input = Console.ReadLine()!;
+            if (decimal.TryParse(input, out decimal price))
+            {
+                productData.Price = price;
+            }
+            else
+            {
+                Console.WriteLine("Invalid input for price");
+            }
+
+            await _productService.CreateProductAsync(productData);
+
+            Console.Clear();
+            Console.WriteLine("\nProduct added successfully. Press any key to continue.");
+            Console.ReadKey();
+
+            return true;
+        }
+
+        public void ShowMainMenuUsers()
         {
             while (true)
             {
@@ -16,7 +143,7 @@ namespace Infrastructure.Services
                 Console.WriteLine($"{"3.",-4} Wiew User Details");
                 Console.WriteLine($"{"4.",-4} Update User");
                 Console.WriteLine($"{"5.",-4} Delete User");
-                Console.WriteLine($"{"0.",-4} Exit Application");
+                Console.WriteLine($"{"0.",-4} Go back to main menu");
                 Console.WriteLine();
                 Console.Write("Enter Menu Option: ");
                 var option = Console.ReadLine();
@@ -39,7 +166,7 @@ namespace Infrastructure.Services
                         ShowDeleteUserOption().ConfigureAwait(false).GetAwaiter().GetResult();
                         break;
                     case "0":
-                        ShowExitApplicationOption();
+                        ShowMainMenu();
                         break;
                     default:
                         Console.WriteLine("\nInvalid option selected. Press any key to continue.");

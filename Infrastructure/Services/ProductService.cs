@@ -1,14 +1,7 @@
 ﻿using Infrastructure.Dtos;
-using Infrastructure.Entities;
 using Infrastructure.Entities.ProductEntities;
-using Infrastructure.Repositories;
 using Infrastructure.Repositories.ProductRepositories;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Services
 {
@@ -48,6 +41,7 @@ namespace Infrastructure.Services
                     categoryId = newCategory.Id;
                 }
 
+
                 var manufactureExists = await _manufactureRepository.ExistingAsync(x => x.ManufactureName == ProductDto.ManufactureName);
                 int manufactureId;
 
@@ -67,6 +61,7 @@ namespace Infrastructure.Services
                     manufactureId = newManufacture.Id;
                 }
 
+
                 var productEntity = new Product
                 {
                     ArticleNumber = ProductDto.ArticleNumber,
@@ -76,14 +71,18 @@ namespace Infrastructure.Services
 
                 var createdProduct = await _productRepository.Create(productEntity);
 
+
                 var productInformationEntity = new ProductInformation
                 {
                     ArticleNumber = ProductDto.ArticleNumber,
                     ProductTitle = ProductDto.ProductTitle,
                     Ingress = ProductDto.Ingress,
+                    Description = ProductDto.Description,
+                    Specification = ProductDto.Specification,
                 };
 
                 var createdProductInformation = await _productInformationRepository.Create(productInformationEntity);
+
 
                 var productPriceEntity = new ProductPrice
                 {

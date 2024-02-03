@@ -1,5 +1,6 @@
 ﻿using Infrastructure.Dtos;
 using Infrastructure.Entities.ProductEntities;
+using Infrastructure.Repositories;
 using Infrastructure.Repositories.ProductRepositories;
 using System.Diagnostics;
 
@@ -13,28 +14,28 @@ namespace Infrastructure.Services
         private readonly ProductInformationRepository _productInformationRepository = productInformationRepository;
         private readonly ProductPriceRepository _productPriceRepository = productPriceRepository;
 
-        public async Task<bool> CreateProductAsync(ProductDto ProductDto)
+        public async Task<bool> CreateProductAsync(ProductDto productDto)
         {
             try
             {
-                if (await _productRepository.ExistingAsync(x => x.ArticleNumber == ProductDto.ArticleNumber))
+                if (await _productRepository.ExistingAsync(x => x.ArticleNumber == productDto.ArticleNumber))
                 {
                     return false;
                 }
 
-                var categoryExists = await _categoryRepository.ExistingAsync(x => x.CategoryName == ProductDto.CategoryName);
+                var categoryExists = await _categoryRepository.ExistingAsync(x => x.CategoryName == productDto.CategoryName);
                 int categoryId;
 
                 if (categoryExists)
                 {
-                    var existsCategoryId = await _categoryRepository.GetAsync(x => x.CategoryName == ProductDto.CategoryName);
+                    var existsCategoryId = await _categoryRepository.GetAsync(x => x.CategoryName == productDto.CategoryName);
                     categoryId = existsCategoryId.Id;
                 }
                 else
                 {
                     var categoryEntity = new Category
                     {
-                        CategoryName = ProductDto.CategoryName,
+                        CategoryName = productDto.CategoryName,
                     };
 
                     var newCategory = await _categoryRepository.Create(categoryEntity);
@@ -42,19 +43,19 @@ namespace Infrastructure.Services
                 }
 
 
-                var manufactureExists = await _manufactureRepository.ExistingAsync(x => x.ManufactureName == ProductDto.ManufactureName);
+                var manufactureExists = await _manufactureRepository.ExistingAsync(x => x.ManufactureName == productDto.ManufactureName);
                 int manufactureId;
 
                 if (manufactureExists)
                 {
-                    var existsManufactureId = await _manufactureRepository.GetAsync(x => x.ManufactureName == ProductDto.ManufactureName);
+                    var existsManufactureId = await _manufactureRepository.GetAsync(x => x.ManufactureName == productDto.ManufactureName);
                     manufactureId = existsManufactureId.Id;
                 }
                 else
                 {
                     var manufactureEntity = new Manufacture
                     {
-                        ManufactureName = ProductDto.ManufactureName,
+                        ManufactureName = productDto.ManufactureName,
                     };
 
                     var newManufacture = await _manufactureRepository.Create(manufactureEntity);
@@ -64,7 +65,7 @@ namespace Infrastructure.Services
 
                 var productEntity = new Product
                 {
-                    ArticleNumber = ProductDto.ArticleNumber,
+                    ArticleNumber = productDto.ArticleNumber,
                     CategoryId = categoryId,
                     ManufactureId = manufactureId,
                 };
@@ -74,11 +75,11 @@ namespace Infrastructure.Services
 
                 var productInformationEntity = new ProductInformation
                 {
-                    ArticleNumber = ProductDto.ArticleNumber,
-                    ProductTitle = ProductDto.ProductTitle,
-                    Ingress = ProductDto.Ingress,
-                    Description = ProductDto.Description,
-                    Specification = ProductDto.Specification,
+                    ArticleNumber = productDto.ArticleNumber,
+                    ProductTitle = productDto.ProductTitle,
+                    Ingress = productDto.Ingress,
+                    Description = productDto.Description,
+                    Specification = productDto.Specification,
                 };
 
                 var createdProductInformation = await _productInformationRepository.Create(productInformationEntity);
@@ -86,8 +87,8 @@ namespace Infrastructure.Services
 
                 var productPriceEntity = new ProductPrice
                 {
-                    ArticleNumber = ProductDto.ArticleNumber,
-                    Price = ProductDto.Price,
+                    ArticleNumber = productDto.ArticleNumber,
+                    Price = productDto.Price,
                 };
 
                 var createdProductPrice = await _productPriceRepository.Create(productPriceEntity);
@@ -96,6 +97,28 @@ namespace Infrastructure.Services
             }
             catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }
             return false;
+        }
+
+        public async Task<IEnumerable<ProductDto>> GetAllProductsAsync()
+        {
+            try
+            {
+                var productEntities = await _productRepository.GetAllAsync();
+
+                if (productEntities != null)
+                {
+                    var productDtos = productEntities.Select(productEntity => new ProductDto
+                    {
+                        ProductTitle = productEntity.ProductInformation!.ProductTitle,
+                        ArticleNumber = productEntity.ArticleNumber,
+                        ManufactureName = productEntity.Manufacture.ManufactureName,
+                    });
+
+                    return productDtos.ToList();
+                }
+            }
+            catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }
+            return null!;
         }
     }
 }

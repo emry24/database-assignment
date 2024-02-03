@@ -59,9 +59,9 @@ namespace Infrastructure.Services
                     case "1":
                         ShowAddProductOption().ConfigureAwait(false).GetAwaiter().GetResult();
                         break;
-                    //case "2":
-                    //    ShowViewProductListOption().ConfigureAwait(false).GetAwaiter().GetResult();
-                    //    break;
+                    case "2":
+                        ShowViewProductListOption().ConfigureAwait(false).GetAwaiter().GetResult();
+                        break;
                     //case "3":
                     //    ShowProductDetailOption().ConfigureAwait(false).GetAwaiter().GetResult();
                     //    break;
@@ -109,10 +109,6 @@ namespace Infrastructure.Services
             Console.Write("Manufacture: ");
             productData.ManufactureName = Console.ReadLine()!;
 
-            //Console.Write("Price: ");
-            //productData.Price = Console.ReadLine
-            //
-
             Console.Write("Price: ");
             string input = Console.ReadLine()!;
             if (decimal.TryParse(input, out decimal price))
@@ -132,6 +128,22 @@ namespace Infrastructure.Services
 
             return true;
         }
+
+        private async Task ShowViewProductListOption()
+        {
+            var products = await _productService.GetAllProductsAsync();
+
+            DisplayMenuTitle("Product List");
+
+            foreach (var item in products)
+            {
+                Console.WriteLine($"{item.ProductTitle} {item.ArticleNumber}, {item.ManufactureName}");
+            }
+
+            Console.WriteLine("\nPress any key to continue.");
+            Console.ReadKey();
+        }
+
 
         public void ShowMainMenuUsers()
         {

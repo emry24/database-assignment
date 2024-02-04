@@ -1,5 +1,6 @@
 ﻿using Infrastructure.Dtos;
 using Infrastructure.Entities.ProductEntities;
+using Infrastructure.Repositories;
 using Infrastructure.Repositories.ProductRepositories;
 using System.Diagnostics;
 
@@ -114,6 +115,33 @@ namespace Infrastructure.Services
                     });
 
                     return productDtos.ToList();
+                }
+            }
+            catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }
+            return null!;
+        }
+
+
+        public async Task<ProductDto> GetProductByArticleNrAsync(string articleNumber)
+        {
+            try
+            {
+                var product = await _productRepository.GetAsync(x => x.ArticleNumber == articleNumber);
+                if (product != null)
+                {
+                    var productDto = new ProductDto
+                    {
+                        ProductTitle = product.ProductInformation!.ProductTitle,
+                        ArticleNumber= product.ArticleNumber,
+                        ManufactureName= product.Manufacture.ManufactureName,
+                        Ingress = product.ProductInformation.Ingress,
+                        Description = product.ProductInformation.Description, 
+                        Price = product.ProductPrice!.Price,
+                        Specification = product.ProductInformation.Specification,
+                        CategoryName = product.Category.CategoryName,
+                    };
+
+                    return productDto;
                 }
             }
             catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }

@@ -62,9 +62,9 @@ namespace Infrastructure.Services
                     case "2":
                         ShowViewProductListOption().ConfigureAwait(false).GetAwaiter().GetResult();
                         break;
-                    //case "3":
-                    //    ShowProductDetailOption().ConfigureAwait(false).GetAwaiter().GetResult();
-                    //    break;
+                    case "3":
+                        ShowProductDetailOption().ConfigureAwait(false).GetAwaiter().GetResult();
+                        break;
                     //case "4":
                     //    ShowUpdateProductMenu();
                     //    break;
@@ -144,6 +144,34 @@ namespace Infrastructure.Services
             Console.ReadKey();
         }
 
+        private async Task ShowProductDetailOption()
+        {
+            DisplayMenuTitle("View Product Details");
+
+            Console.Write("Enter the article number of the product to view details: ");
+            var articleNumberToView = Console.ReadLine();
+
+            var product = await _productService.GetProductByArticleNrAsync(articleNumberToView!);
+
+            if (product != null)
+            {
+                Console.Clear();
+                Console.WriteLine($"Product: {product.ProductTitle} {product.ArticleNumber}");
+                Console.WriteLine($"Manufacture: {product.ManufactureName}");
+                Console.WriteLine($"Ingress: {product.Ingress}");
+                Console.WriteLine($"Description: {product.Description}");
+                Console.WriteLine($"Price: {product.Price}");
+                Console.WriteLine($"Specification: {product.Specification}");
+                Console.WriteLine($"Category: {product.CategoryName}");
+            }
+            else
+            {
+                Console.Clear();
+                Console.WriteLine("\nProduct not found.");
+            }
+            Console.WriteLine("\nPress any key to continue.");
+            Console.ReadKey();
+        }
 
         public void ShowMainMenuUsers()
         {

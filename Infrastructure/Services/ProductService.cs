@@ -121,7 +121,6 @@ namespace Infrastructure.Services
             return null!;
         }
 
-
         public async Task<ProductDto> GetProductByArticleNrAsync(string articleNumber)
         {
             try
@@ -146,6 +145,57 @@ namespace Infrastructure.Services
             }
             catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }
             return null!;
+        }
+
+        //public async Task<bool> UpdateUserAddressAsync(UserDto updatedAddressDto)
+        //{
+        //    try
+        //    {
+        //        var user = await _authRepository.GetAsync(u => u.Email == updatedAddressDto.Email);
+        //        if (user != null)
+        //        {
+        //            var profileEntity = await _profileRepository.GetAsync(p => p.UserId == user.UserId);
+        //            profileEntity.FirstName = updatedAddressDto.FirstName;
+        //            profileEntity.LastName = updatedAddressDto.LastName;
+
+        //            var updatedProfile = await _profileRepository.UpdateAsync(p => p.UserId == profileEntity.UserId, profileEntity);
+
+        //            var userAddressEntity = await _addressRepository.GetAsync(a => a.UserId == user.UserId);
+        //            userAddressEntity.StreetName = updatedAddressDto.StreetName;
+        //            userAddressEntity.PostalCode = updatedAddressDto.PostalCode;
+        //            userAddressEntity.City = updatedAddressDto.City;
+
+        //            var updatedAddress = await _addressRepository.UpdateAsync(a => a.UserId == userAddressEntity.UserId, userAddressEntity);
+
+        //            return updatedProfile != null && updatedAddress != null;
+        //        }
+        //        else
+        //        {
+        //            return false;
+        //        }
+        //    }
+        //    catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }
+        //    return false;
+        //}
+
+
+        public async Task<bool> DeleteProductByArticleNrAsync(string articleNumber)
+        {
+            try
+            {
+                var product = await _productRepository.GetAsync(x => x.ArticleNumber == articleNumber);
+                if (product != null)
+                {
+                    await _productRepository.DeleteAsync(x => x.ArticleNumber == articleNumber);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }
+            return false;
         }
     }
 }

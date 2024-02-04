@@ -68,9 +68,9 @@ namespace Infrastructure.Services
                     //case "4":
                     //    ShowUpdateProductMenu();
                     //    break;
-                    //case "5":
-                    //    ShowDeleteProductOption().ConfigureAwait(false).GetAwaiter().GetResult();
-                    //    break;
+                    case "5":
+                        ShowDeleteProductOption().ConfigureAwait(false).GetAwaiter().GetResult();
+                        break;
                     case "0":
                         ShowMainMenu();
                         break;
@@ -172,6 +172,29 @@ namespace Infrastructure.Services
             Console.WriteLine("\nPress any key to continue.");
             Console.ReadKey();
         }
+
+        // UPDATE PRODUCT
+
+        private async Task ShowDeleteProductOption()
+        {
+            DisplayMenuTitle("Delete Product");
+
+            Console.Write("Enter the article number of the product you want to delete: ");
+            var articleToDelete = Console.ReadLine();
+
+            if (await _productService.DeleteProductByArticleNrAsync(articleToDelete!))
+            {
+                Console.WriteLine("\nProduct deleted successfully.");
+            }
+            else
+            {
+                Console.WriteLine("\nProduct not found.");
+            }
+
+            Console.WriteLine("\nPress any key to continue.");
+            Console.ReadKey();
+        }
+
 
         public void ShowMainMenuUsers()
         {

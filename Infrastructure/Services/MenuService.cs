@@ -1,4 +1,5 @@
 ﻿using Infrastructure.Dtos;
+using System.Diagnostics;
 
 namespace Infrastructure.Services
 {
@@ -65,9 +66,9 @@ namespace Infrastructure.Services
                     case "3":
                         ShowProductDetailOption().ConfigureAwait(false).GetAwaiter().GetResult();
                         break;
-                    //case "4":
-                    //    ShowUpdateProductMenu();
-                    //    break;
+                    case "4":
+                        ShowUpdateProductOption().ConfigureAwait(false).GetAwaiter().GetResult(); 
+                        break;
                     case "5":
                         ShowDeleteProductOption().ConfigureAwait(false).GetAwaiter().GetResult();
                         break;
@@ -174,6 +175,85 @@ namespace Infrastructure.Services
         }
 
         // UPDATE PRODUCT
+        private async Task ShowUpdateProductOption()
+        {
+
+            Console.Clear();
+            DisplayMenuTitle("Update Product");
+
+            Console.Write("Enter Article Number: ");
+            var articleNrToView = Console.ReadLine();
+
+            var product = await _productService.GetProductByArticleNrAsync(articleNrToView!);
+
+            if (product != null)
+            {
+                Console.Clear();
+                Console.WriteLine($"Product Title: {product.ProductTitle}");
+                Console.WriteLine($"Ingress: {product.Ingress}");
+                Console.WriteLine($"Description: {product.Description}");
+                Console.WriteLine($"Specification: {product.Specification}");
+                Console.WriteLine($"Manufacture: {product.ManufactureName}");
+                Console.WriteLine($"Category: {product.CategoryName}");
+                Console.WriteLine($"Price: {product.Price}");
+
+                Console.WriteLine("\nEnter Updated Product Details: ");
+
+                Console.Write("Product Title: ");
+                var productTitle = Console.ReadLine();
+
+                Console.Write("Ingress: ");
+                var ingress = Console.ReadLine();
+
+                Console.Write("Description: ");
+                var description = Console.ReadLine();
+
+                Console.Write("Specification: ");
+                var specification = Console.ReadLine();
+
+                Console.Write("Manufacture: ");
+                var manufacture = Console.ReadLine();
+
+                Console.Write("Category: ");
+                var category = Console.ReadLine();
+
+                Console.Write("Price: ");
+                var priceInput = Console.ReadLine()!;
+
+                var price = decimal.Parse(priceInput);
+
+                var updatedProduct = new ProductDto
+                {
+                    ProductTitle = productTitle!,
+                    Ingress = ingress,
+                    Description = description,
+                    Specification = specification,
+                    ManufactureName = manufacture!,
+                    CategoryName = category!,
+                    Price = price
+                };
+
+                var success = await _productService.UpdateProductAsync(articleNrToView!, updatedProduct);
+                if (success)
+                {
+                    Console.Clear();
+                    Console.WriteLine("\nProduct updated successfully!");
+                }
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine("\nFailed to update product.");
+                }
+            }
+            else
+            {
+                Console.Clear();
+                Console.WriteLine("\nProduct not found.");
+            }
+
+            Console.WriteLine("\nPress any key to continue.");
+            Console.ReadKey();
+        }
 
         private async Task ShowDeleteProductOption()
         {
@@ -194,7 +274,6 @@ namespace Infrastructure.Services
             Console.WriteLine("\nPress any key to continue.");
             Console.ReadKey();
         }
-
 
         public void ShowMainMenuUsers()
         {

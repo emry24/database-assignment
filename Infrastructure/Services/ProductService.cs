@@ -3,6 +3,7 @@ using Infrastructure.Entities.ProductEntities;
 using Infrastructure.Repositories;
 using Infrastructure.Repositories.ProductRepositories;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace Infrastructure.Services
 {
@@ -147,36 +148,67 @@ namespace Infrastructure.Services
             return null!;
         }
 
-        //public async Task<bool> UpdateUserAddressAsync(UserDto updatedAddressDto)
-        //{
-        //    try
-        //    {
-        //        var user = await _authRepository.GetAsync(u => u.Email == updatedAddressDto.Email);
-        //        if (user != null)
-        //        {
-        //            var profileEntity = await _profileRepository.GetAsync(p => p.UserId == user.UserId);
-        //            profileEntity.FirstName = updatedAddressDto.FirstName;
-        //            profileEntity.LastName = updatedAddressDto.LastName;
+        public async Task<bool> UpdateProductAsync(string articleNumber, ProductDto updatedProductDto)
+        {
+            try
+            {
+                var product = await _productRepository.GetAsync(x => x.ArticleNumber == articleNumber);
+                if (product != null)
+                {
+                    var productInfoEntity = await _productInformationRepository.GetAsync(x => x.ArticleNumber == product.ArticleNumber);
+                    productInfoEntity.ProductTitle = updatedProductDto.ProductTitle;
+                    productInfoEntity.Ingress = updatedProductDto.Ingress;
+                    productInfoEntity.Description = updatedProductDto?.Description;
+                    productInfoEntity.Specification = updatedProductDto?.Specification;
 
-        //            var updatedProfile = await _profileRepository.UpdateAsync(p => p.UserId == profileEntity.UserId, profileEntity);
+                    var updatedProductInfo = await _productInformationRepository.UpdateAsync(x => x.ArticleNumber == productInfoEntity.ArticleNumber, productInfoEntity);
 
-        //            var userAddressEntity = await _addressRepository.GetAsync(a => a.UserId == user.UserId);
-        //            userAddressEntity.StreetName = updatedAddressDto.StreetName;
-        //            userAddressEntity.PostalCode = updatedAddressDto.PostalCode;
-        //            userAddressEntity.City = updatedAddressDto.City;
 
-        //            var updatedAddress = await _addressRepository.UpdateAsync(a => a.UserId == userAddressEntity.UserId, userAddressEntity);
+                    var existingManufacture = await _manufactureRepository.GetAsync(c => c.ManufactureName == updatedProductDto!.ManufactureName);
+                    if (existingManufacture != null)
+                    {
+                        product.ManufactureId = existingManufacture.Id;
+                    }
+                    else
+                    {
+                        var newManufacture = new Manufacture { ManufactureName = updatedProductDto!.ManufactureName };
+                        newManufacture = await _manufactureRepository.Create(newManufacture);
+                        product.ManufactureId = newManufacture.Id;
+                    }
 
-        //            return updatedProfile != null && updatedAddress != null;
-        //        }
-        //        else
-        //        {
-        //            return false;
-        //        }
-        //    }
-        //    catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }
-        //    return false;
-        //}
+                    var updatedManufacture = await _productRepository.UpdateAsync(x => x.ArticleNumber == articleNumber, product);
+
+
+
+                    var existingCategory = await _categoryRepository.GetAsync(c => c.CategoryName == updatedProductDto!.CategoryName);
+                    if (existingCategory != null)
+                    {
+                        product.CategoryId = existingCategory.Id;
+                    }
+                    else
+                    {
+                        var newCategory = new Category { CategoryName = updatedProductDto!.CategoryName };
+                        newCategory = await _categoryRepository.Create(newCategory);
+                        product.CategoryId = newCategory.Id;
+                    }
+
+                    var updatedCategory = await _productRepository.UpdateAsync(x => x.ArticleNumber == articleNumber, product);
+
+                    var productPriceEntity = await _productPriceRepository.GetAsync(x => x.ArticleNumber == articleNumber);
+                    productPriceEntity.Price = updatedProductDto!.Price;
+
+                    var updatedPrice = await _productPriceRepository.UpdateAsync(x => x.ArticleNumber == productPriceEntity.ArticleNumber, productPriceEntity);
+
+                    return updatedProductInfo != null && updatedManufacture != null && updatedCategory != null && updatedPrice != null; 
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }
+            return false;
+        }
 
 
         public async Task<bool> DeleteProductByArticleNrAsync(string articleNumber)

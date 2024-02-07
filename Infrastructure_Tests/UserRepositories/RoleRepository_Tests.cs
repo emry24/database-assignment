@@ -14,7 +14,7 @@ public class RoleRepository_Tests
         .Options);
 
     [Fact]
-    public async Task CreateAsync_Should_Add_One_RoleEntity_To_Database_And_Return_Updated_RoleEntity()
+    public async Task CreateAsync_ShouldCreateSaveRecordToDatabase_ReturnRoleEntityWithId_1()
     {
         //Arrange
         var roleRepository = new RoleRepository(_context);
@@ -29,7 +29,7 @@ public class RoleRepository_Tests
     }
 
     [Fact]
-    public async Task CreateAsync_Should_Not_Add_One_RoleEntity_To_Database_And_ReturnNull()
+    public async Task CreateAsync_ShouldNotSaveRecordToDatabase_ReturnNull()
     {
         //Arrange
         var roleRepository = new RoleRepository(_context);
@@ -43,7 +43,24 @@ public class RoleRepository_Tests
     }
 
     [Fact]
-    public async Task GetAsync_ShouldGetAllRecords_ReturnIEnumerableOfTypeRoleEntity()
+    public async Task GetAllAsync_ShouldGetAllRecords_ReturnIEnumerableOfTypeRoleEntity()
+    {
+        //Arrange
+        var roleRepository = new RoleRepository(_context);
+        var roleEntity = new RoleEntity { RoleName = "Tester" };
+        await roleRepository.CreateAsync(roleEntity); 
+
+        //Act
+        var result = await roleRepository.GetAllAsync();
+
+        //Assert
+        Assert.NotNull(result);
+        Assert.IsAssignableFrom<IEnumerable<RoleEntity>>(result);
+        Assert.Single(result);
+    }
+
+    [Fact]
+    public async Task GetAsync_ShouldGetOneRoleByRoleName_ReturnOneRole()
     {
         //Arrange
         var roleRepository = new RoleRepository(_context);
@@ -61,7 +78,7 @@ public class RoleRepository_Tests
     }
 
     [Fact]
-    public async Task GetAsync_ShouldNotGetAllRecords_ReturnNull()
+    public async Task GetAsync_ShouldNotGetOneRoleByRoleName_ReturnNull()
     {
         //Arrange
         var roleRepository = new RoleRepository(_context);
@@ -73,4 +90,35 @@ public class RoleRepository_Tests
         //Assert
         Assert.Null(result);
     }
+
+    [Fact]
+    public async Task DeleteAsync_ShouldRemoveOneRole_ReturnTrue()
+    {
+        //Arrange
+        var roleRepository = new RoleRepository(_context);
+        var roleEntity = new RoleEntity { RoleName = "Tester" };
+        await roleRepository.CreateAsync(roleEntity);
+
+        //Act
+        var result = await roleRepository.DeleteAsync(x => x.RoleName == roleEntity.RoleName);
+
+        //Assert
+        Assert.True(result);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_ShouldNotFindRoleAndRemoveIt_ReturnFalse()
+    {
+        //Arrange
+        var roleRepository = new RoleRepository(_context);
+        var RoleEntity = new RoleEntity { RoleName = "Tester" };
+
+        //Act
+        var result = await roleRepository.DeleteAsync(x => x.RoleName == RoleEntity.RoleName);
+
+        //Assert
+        Assert.False(result);
+    }
+
+
 }

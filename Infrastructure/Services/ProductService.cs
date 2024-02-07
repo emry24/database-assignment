@@ -111,7 +111,7 @@ namespace Infrastructure.Services
                     var productDtos = productEntities.Select(productEntity => new ProductDto
                     {
                         ProductTitle = productEntity.ProductInformation!.ProductTitle,
-                        ArticleNumber = productEntity.ArticleNumber,
+                        CategoryName = productEntity.Category.CategoryName,
                         ManufactureName = productEntity.Manufacture.ManufactureName,
                     });
 

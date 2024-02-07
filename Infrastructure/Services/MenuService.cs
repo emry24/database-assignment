@@ -138,7 +138,7 @@ namespace Infrastructure.Services
 
             foreach (var item in products)
             {
-                Console.WriteLine($"{item.ProductTitle} {item.ArticleNumber}, {item.ManufactureName}");
+                Console.WriteLine($"{item.ProductTitle}, {item.ManufactureName}, {item.CategoryName}");
             }
 
             Console.WriteLine("\nPress any key to continue.");
@@ -174,7 +174,6 @@ namespace Infrastructure.Services
             Console.ReadKey();
         }
 
-        // UPDATE PRODUCT
         private async Task ShowUpdateProductOption()
         {
 
@@ -391,7 +390,6 @@ namespace Infrastructure.Services
                 Console.WriteLine($"Email: {user.Email}");
                 Console.WriteLine($"Role: {user.RoleName}");
 
-                Console.WriteLine("\nPress any key to continue.");
             }
             else
             {

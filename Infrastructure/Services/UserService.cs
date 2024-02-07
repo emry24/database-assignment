@@ -40,7 +40,7 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
                     RoleName = userRegistrationDto.RoleName,
                 };
 
-                var newRole = await _roleRepository.Create(roleentity);
+                var newRole = await _roleRepository.CreateAsync(roleentity);
                 roleId = newRole.Id;
             }
 
@@ -51,7 +51,7 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
                 RoleId = roleId,
             };
 
-            var createdUser = await _userRepository.Create(userEntity);
+            var createdUser = await _userRepository.CreateAsync(userEntity);
 
             // result = generera password skall ta in userRegistartionDTO.password
 
@@ -62,7 +62,7 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
                 Password = userRegistrationDto.Password,
             };
 
-            var createdAuth = await _authRepository.Create(authEntity);
+            var createdAuth = await _authRepository.CreateAsync(authEntity);
 
             var userAddressEntity = new UserAddressEntity
             {
@@ -72,7 +72,7 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
                 City = userRegistrationDto.City,   
             };
 
-            var createdAddress = await _addressRepository.Create(userAddressEntity);  
+            var createdAddress = await _addressRepository.CreateAsync(userAddressEntity);  
 
             var profileEntity = new ProfileEntity
             {
@@ -81,7 +81,7 @@ public class UserService(UserRepository userRepository, RoleRepository roleRepos
                 LastName = userRegistrationDto.LastName,
             };
 
-            var createdProfile = await _profileRepository.Create(profileEntity);
+            var createdProfile = await _profileRepository.CreateAsync(profileEntity);
 
             return true;
         }

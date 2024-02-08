@@ -111,10 +111,10 @@ public class RoleRepository_Tests
     {
         //Arrange
         var roleRepository = new RoleRepository(_context);
-        var RoleEntity = new RoleEntity { RoleName = "Tester" };
+        var roleEntity = new RoleEntity { RoleName = "Tester" };
 
         //Act
-        var result = await roleRepository.DeleteAsync(x => x.RoleName == RoleEntity.RoleName);
+        var result = await roleRepository.DeleteAsync(x => x.RoleName == roleEntity.RoleName);
 
         //Assert
         Assert.False(result);

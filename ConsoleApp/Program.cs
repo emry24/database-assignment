@@ -17,7 +17,7 @@ var builder = Host.CreateDefaultBuilder().ConfigureServices(services =>
     services.AddScoped<ProfileRepository>();
     services.AddScoped<RoleRepository>();
 
-    services.AddDbContext<ProductDataContext>(x => x.UseSqlServer(@"Data Source=DESKTOP-RA22D0F\MSSQLSERVER02;Initial Catalog=database2;Integrated Security=True;Trust Server Certificate=True"));
+    services.AddDbContext<ProductDataContext>(x => x.UseSqlServer(@"Data Source=DESKTOP-RA22D0F\MSSQLSERVER02;Initial Catalog=ProductCatalog;Integrated Security=True;Trust Server Certificate=True"));
     services.AddScoped<ProductService>();
 
     services.AddScoped<ProductRepository>();

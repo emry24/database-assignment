@@ -120,5 +120,44 @@ public class RoleRepository_Tests
         Assert.False(result);
     }
 
+    [Fact]
+    public async Task UpdateAsync_ShouldUpdateRole_ReturnUpdatedEntity()
+    {
+        //Arrange
+        var roleRepository = new RoleRepository(_context);
+        var roleEntity = await roleRepository.CreateAsync(new RoleEntity
+        {
+            RoleName = "Admin"
+        });
 
+        //Act
+        roleEntity.RoleName = "Awesome";
+        var updatedRole = await roleRepository.UpdateAsync(x => x.Id == roleEntity.Id, roleEntity);
+
+        //Assert
+        Assert.NotNull(updatedRole);
+        Assert.Equal("Awesome", updatedRole.RoleName);
+
+        
+    }
+
+    [Fact]
+    public async Task UpdateAsync_ShouldNotUpdateRoleIfNotExists_ReturnNull()
+    {
+        //Arrange
+        var roleRepository = new RoleRepository(_context);
+        var roleEntity = await roleRepository.CreateAsync(new RoleEntity
+        {
+            RoleName = "Admin"
+        });
+
+        //Act
+        roleEntity.RoleName = "Awesome";
+        var updatedRole = await roleRepository.UpdateAsync(x => x.Id == 999, roleEntity);
+
+        //Assert
+        Assert.Null(updatedRole);
+
+
+    }
 }

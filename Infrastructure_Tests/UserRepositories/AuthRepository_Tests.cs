@@ -13,7 +13,7 @@ public class AuthRepository_Tests
     .Options);
 
     [Fact]
-    public async Task CreateAsync_ShouldCreateSaveRecordToDatabase_ReturnAddressEntity()
+    public async Task CreateAsync_ShouldCreateSaveRecordToDatabase_ReturnAuthEntity()
     {
         //Arrange
         var authRepository = new AuthRepository(_context);
@@ -145,7 +145,7 @@ public class AuthRepository_Tests
     }
 
     [Fact]
-    public async Task UpdateAsync_ShouldUpdateUserAddress_ReturnUpdatedEntity()
+    public async Task UpdateAsync_ShouldUpdateUserAuth_ReturnUpdatedEntity()
     {
         //Arrange
         var authRepository = new AuthRepository(_context);

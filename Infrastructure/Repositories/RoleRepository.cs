@@ -1,6 +1,4 @@
-﻿
-
-using Infrastructure.Contexts;
+﻿using Infrastructure.Contexts;
 using Infrastructure.Dtos;
 using Infrastructure.Entities;
 

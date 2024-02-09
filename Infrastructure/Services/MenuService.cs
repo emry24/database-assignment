@@ -1,5 +1,4 @@
 ﻿using Infrastructure.Dtos;
-using System.Diagnostics;
 
 namespace Infrastructure.Services
 {

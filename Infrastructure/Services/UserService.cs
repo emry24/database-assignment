@@ -1,7 +1,6 @@
 ﻿using Infrastructure.Dtos;
 using Infrastructure.Entities;
 using Infrastructure.Repositories;
-using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Diagnostics;
 

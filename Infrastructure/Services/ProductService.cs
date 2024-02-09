@@ -163,7 +163,6 @@ namespace Infrastructure.Services
 
                     var updatedProductInfo = await _productInformationRepository.UpdateAsync(x => x.ArticleNumber == productInfoEntity.ArticleNumber, productInfoEntity);
 
-
                     var existingManufacture = await _manufactureRepository.GetAsync(c => c.ManufactureName == updatedProductDto!.ManufactureName);
                     if (existingManufacture != null)
                     {
@@ -177,8 +176,6 @@ namespace Infrastructure.Services
                     }
 
                     var updatedManufacture = await _productRepository.UpdateAsync(x => x.ArticleNumber == articleNumber, product);
-
-
 
                     var existingCategory = await _categoryRepository.GetAsync(c => c.CategoryName == updatedProductDto!.CategoryName);
                     if (existingCategory != null)

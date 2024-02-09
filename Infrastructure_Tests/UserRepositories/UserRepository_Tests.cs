@@ -92,33 +92,28 @@ public class UserRepository_Tests
     public async Task GetAsync_ShouldGetOneUser_ReturnOneUserEntity()
     {
         //Arrange
-        var userRepository = new UserRepository(_context);
-
-        var userEntity = new UserEntity
+        _context.Users.Add(new UserEntity
         {
             Id = Guid.NewGuid(),
             Created = new DateTime(),
             Modified = new DateTime(),
-            RoleId = 1
-        };
+            RoleId = 1,
+            Role = new RoleEntity { Id = 1, RoleName = "rolename" },
+            Profile = new ProfileEntity { FirstName = "firstname", LastName = "lastname" },
+            UserAddress = new UserAddressEntity { StreetName = "streetname", PostalCode = "12345", City = "city" },
+            UserAuth = new UserAuthEntity { Email = "email", Password = "password" }
+        });
+        await _context.SaveChangesAsync();
 
-        //var userEntity = new UserEntity { RoleId = roleEntity.Id };
-        //userEntity.Profile = profileEntity;
-        //userEntity.UserAddress = userAddressEntity;
-        //userEntity.UserAuth = userAuthEntity;
-        //await userRepository.CreateAsync(userEntity);
-        //await userRepository.CreateAsync(userEntity);
+        var userRepository = new UserRepository(_context);
 
-        _context.Users.Add(userEntity);
-        _context.SaveChanges();
+        // Act
+        Expression<Func<UserEntity, bool>> expression = p => p.RoleId == 1;
+        var result = await userRepository.GetAsync(expression);
 
-        Expression<Func<UserEntity, bool>> validExpression = entity => entity.Id == userEntity.Id;
-
-        //Act
-        var result = await userRepository.GetAsync(validExpression);
-
-        //Assert
+        // Assert
         Assert.NotNull(result);
+        Assert.Equal(1, result.RoleId);
     }
 
     [Fact]

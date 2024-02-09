@@ -3,8 +3,6 @@ using Infrastructure.Repositories.ProductRepositories;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Infrastructure.Dtos;
-using Infrastructure.Entities.ProductEntities;
-using Infrastructure.Repositories;
 
 
 namespace Infrastructure_Tests;

@@ -16,7 +16,7 @@ namespace Infrastructure.Repositories.ProductRepositories
             _context = context;
         }
 
-        public virtual async Task<TEntity> Create(TEntity entity)
+        public virtual async Task<TEntity> CreateAsync(TEntity entity)
         {
             try
             {

@@ -2,7 +2,6 @@
 using Infrastructure.Entities;
 using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System.Data;
 using System.Linq.Expressions;
 
 namespace Infrastructure_Tests.UserRepositories;

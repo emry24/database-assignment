@@ -1,9 +1,8 @@
 ﻿using Infrastructure.Dtos;
 using Infrastructure.Entities.ProductEntities;
-using Infrastructure.Repositories;
 using Infrastructure.Repositories.ProductRepositories;
 using System.Diagnostics;
-using System.Reflection;
+
 
 namespace Infrastructure.Services
 {
@@ -39,7 +38,7 @@ namespace Infrastructure.Services
                         CategoryName = productDto.CategoryName,
                     };
 
-                    var newCategory = await _categoryRepository.Create(categoryEntity);
+                    var newCategory = await _categoryRepository.CreateAsync(categoryEntity);
                     categoryId = newCategory.Id;
                 }
 
@@ -59,7 +58,7 @@ namespace Infrastructure.Services
                         ManufactureName = productDto.ManufactureName,
                     };
 
-                    var newManufacture = await _manufactureRepository.Create(manufactureEntity);
+                    var newManufacture = await _manufactureRepository.CreateAsync(manufactureEntity);
                     manufactureId = newManufacture.Id;
                 }
 
@@ -71,7 +70,7 @@ namespace Infrastructure.Services
                     ManufactureId = manufactureId,
                 };
 
-                var createdProduct = await _productRepository.Create(productEntity);
+                var createdProduct = await _productRepository.CreateAsync(productEntity);
 
 
                 var productInformationEntity = new ProductInformation
@@ -83,7 +82,7 @@ namespace Infrastructure.Services
                     Specification = productDto.Specification,
                 };
 
-                var createdProductInformation = await _productInformationRepository.Create(productInformationEntity);
+                var createdProductInformation = await _productInformationRepository.CreateAsync(productInformationEntity);
 
 
                 var productPriceEntity = new ProductPrice
@@ -92,7 +91,7 @@ namespace Infrastructure.Services
                     Price = productDto.Price,
                 };
 
-                var createdProductPrice = await _productPriceRepository.Create(productPriceEntity);
+                var createdProductPrice = await _productPriceRepository.CreateAsync(productPriceEntity);
 
                 return true;
             }
@@ -171,7 +170,7 @@ namespace Infrastructure.Services
                     else
                     {
                         var newManufacture = new Manufacture { ManufactureName = updatedProductDto!.ManufactureName };
-                        newManufacture = await _manufactureRepository.Create(newManufacture);
+                        newManufacture = await _manufactureRepository.CreateAsync(newManufacture);
                         product.ManufactureId = newManufacture.Id;
                     }
 
@@ -185,7 +184,7 @@ namespace Infrastructure.Services
                     else
                     {
                         var newCategory = new Category { CategoryName = updatedProductDto!.CategoryName };
-                        newCategory = await _categoryRepository.Create(newCategory);
+                        newCategory = await _categoryRepository.CreateAsync(newCategory);
                         product.CategoryId = newCategory.Id;
                     }
 

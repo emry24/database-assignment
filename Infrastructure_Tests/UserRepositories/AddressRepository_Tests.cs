@@ -21,7 +21,7 @@ public class AddressRepository_Tests
         { 
             UserId = Guid.NewGuid(),
             StreetName = "streetname", 
-            PostalCode = "123456",
+            PostalCode = "12345",
             City = "city"
         };
 
@@ -40,7 +40,7 @@ public class AddressRepository_Tests
         var addressEntity = new UserAddressEntity
         {
             StreetName = "streetname",
-            PostalCode = "postalcode",
+            PostalCode = "12345",
             City = "city"
         };
 
@@ -60,7 +60,7 @@ public class AddressRepository_Tests
         { 
             UserId = Guid.NewGuid(),
             StreetName = "streetname",
-            PostalCode = "123456",
+            PostalCode = "12345",
             City = "city"
         };
         await addressRepository.CreateAsync(addressEntity);
@@ -83,7 +83,7 @@ public class AddressRepository_Tests
         { 
             UserId = Guid.NewGuid() ,
             StreetName = "streetname",
-            PostalCode = "123456",
+            PostalCode = "12345",
             City = "city"
         };
         _context.UserAddresses.Add(addressEntity);
@@ -121,7 +121,7 @@ public class AddressRepository_Tests
         { 
             UserId = Guid.NewGuid(),
             StreetName = "streetname",
-            PostalCode = "123456",
+            PostalCode = "12345",
             City = "city"
         };
         await addressRepository.CreateAsync(addressEntity);
@@ -138,7 +138,7 @@ public class AddressRepository_Tests
     {
         //Arrange
         var addressRepository = new AddressRepository(_context);
-        var addressEntity = new UserAddressEntity { StreetName = "Tester" };
+        var addressEntity = new UserAddressEntity { StreetName = "tester" };
 
         //Act
         var result = await addressRepository.DeleteAsync(x => x.StreetName == addressEntity.StreetName);
@@ -156,7 +156,7 @@ public class AddressRepository_Tests
         {
             UserId = Guid.NewGuid(),
             StreetName = "streetname",
-            PostalCode = "123456",
+            PostalCode = "12345",
             City = "city"
         });
 
@@ -180,7 +180,7 @@ public class AddressRepository_Tests
         {
             UserId = Guid.NewGuid(),
             StreetName = "streetname",
-            PostalCode = "123456",
+            PostalCode = "12345",
             City = "city"
         });
 

@@ -14,8 +14,8 @@ namespace Infrastructure_Tests.UserRepositories;
 public class ProfileRepository_Tests
 {
     private readonly DataContext _context = new(new DbContextOptionsBuilder<DataContext>()
-.UseInMemoryDatabase($"{Guid.NewGuid()}")
-.Options);
+    .UseInMemoryDatabase($"{Guid.NewGuid()}")
+    .Options);
 
     [Fact]
     public async Task CreateAsync_ShouldCreateSaveRecordToDatabase_ReturnProfileEntity()

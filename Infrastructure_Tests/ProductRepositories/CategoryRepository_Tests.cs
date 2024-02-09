@@ -1,5 +1,4 @@
 ﻿using Infrastructure.Contexts;
-using Infrastructure.Entities;
 using Infrastructure.Entities.ProductEntities;
 using Infrastructure.Repositories.ProductRepositories;
 using Microsoft.EntityFrameworkCore;
